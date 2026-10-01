@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" preserveAspectRatio="none">
+<rect width="700" height="480" fill="#2d4a3a"/>
+<rect x="36" y="42" width="628" height="418" rx="18" fill="#946640" stroke="#111" stroke-width="7"/>
+<defs>
+<g id="lettuce" stroke="#111" stroke-width="4"><circle r="52" fill="#7cc04a"/><circle r="36" fill="#a5d86a"/><circle r="20" fill="#7cc04a"/><circle r="8" fill="#c9eb93"/></g>
+<g id="tomato" stroke="#111" stroke-width="4"><circle r="44" fill="#e84a3f"/><path d="M-18 -38 L0 -28 L18 -38 L8 -46 L0 -58 L-8 -46 Z" fill="#4c9a35"/></g>
+<g id="carrot" stroke="#111" stroke-width="4"><path d="M-12 -60 Q-26 -90 -18 -100 Q-4 -86 0 -64 Q4 -86 18 -100 Q26 -90 12 -60 Z" fill="#5cb03e"/><path d="M-26 -58 L26 -58 L4 92 L-4 92 Z" fill="#f08d33"/><path d="M-20 -20 h14 M8 10 h12 M-14 40 h12" stroke-linecap="round"/></g>
+<g id="pepper" stroke="#111" stroke-width="4"><path d="M-46 -30 Q-50 -55 -20 -55 Q0 -45 20 -55 Q50 -55 46 -30 L38 40 Q30 60 12 52 Q0 62 -12 52 Q-30 60 -38 40 Z" fill="#8bc34a"/><path d="M0 -55 Q0 -75 14 -82" fill="none" stroke-width="6"/></g>
+</defs>
+<use href="#lettuce" x="120" y="125"/>
+<use href="#lettuce" x="120" y="250"/>
+<use href="#lettuce" x="120" y="375"/>
+<use href="#tomato" x="230" y="130"/>
+<use href="#tomato" x="230" y="255"/>
+<use href="#tomato" x="335" y="130"/>
+<use href="#tomato" x="335" y="255"/>
+<use href="#carrot" x="440" y="190"/>
+<use href="#carrot" x="520" y="190"/>
+<use href="#carrot" x="600" y="190"/>
+<use href="#pepper" x="260" y="380"/>
+<g stroke="#111" stroke-width="4"><path d="M370 420 Q350 390 400 360 Q450 320 470 290 Q490 300 486 330 Q470 390 410 425 Q385 438 370 420 Z" fill="#7a3f7d"/><path d="M462 300 L478 280 L496 300 Z" fill="#4c9a35"/></g>
+<use href="#pepper" x="590" y="380"/>
+</svg>

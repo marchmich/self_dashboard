@@ -1,0 +1,147 @@
+:root {
+  --bg: #d9d9d9;
+  --ink: #111;
+  --link: #4a5bb5;
+  --table-bg: #fff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  margin: 0 0 40px;
+}
+
+.top {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.garden-list {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding-top: 48px;
+  min-width: 200px;
+}
+
+.garden-link {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 1.75rem;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.garden-link:hover { color: var(--link); }
+
+.garden-link.active {
+  color: var(--link);
+  font-size: 2.5rem;
+}
+
+.plan {
+  flex: 1;
+  min-width: 280px;
+  max-width: 820px;
+  margin: 0;
+}
+
+.dim-label {
+  font-weight: 600;
+  font-size: 2.5rem;
+  display: block;
+  text-align: center;
+}
+
+.dim-width { width: calc(100% - 64px); margin-bottom: 36px; }
+
+.dim-line-h {
+  height: 28px;
+  border-left: 2px solid var(--ink);
+  border-right: 2px solid var(--ink);
+  background: linear-gradient(var(--ink), var(--ink)) center / 100% 2px no-repeat;
+}
+
+.plan-row { display: flex; align-items: stretch; }
+
+.garden-image {
+  display: block;
+  width: calc(100% - 64px);
+  height: auto;
+  max-height: 600px;
+  object-fit: fill;
+}
+
+.dim-length {
+  display: flex;
+  align-items: center;
+  width: 64px;
+  margin-left: 12px;
+}
+
+.dim-line-v {
+  width: 50px;
+  align-self: stretch;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  background: linear-gradient(var(--ink), var(--ink)) center / 2px 100% no-repeat;
+  flex-shrink: 0;
+}
+
+.dim-label.vertical {
+  writing-mode: vertical-rl;
+  margin-left: 8px;
+}
+
+.area {
+  width: calc(100% - 64px);
+  text-align: center;
+  font-weight: 600;
+  font-size: 2.5rem;
+  margin-top: 40px;
+}
+
+.plots {
+  width: 100%;
+  margin-top: 80px;
+  border-collapse: collapse;
+  background: var(--table-bg);
+  table-layout: fixed;
+}
+
+.plots th,
+.plots td {
+  border: 2px solid #222;
+  padding: 20px 8px;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.plots th { font-weight: 600; font-size: 1.9rem; }
+.plots td { height: 130px; }
+
+@media (max-width: 720px) {
+  .garden-list { flex-direction: row; flex-wrap: wrap; gap: 20px; padding-top: 0; }
+  .garden-link, .garden-link.active { font-size: 1.25rem; }
+  .dim-label, .area { font-size: 1.5rem; }
+  .plots { display: block; overflow-x: auto; table-layout: auto; }
+  .plots th, .plots td { font-size: 1rem; padding: 10px 6px; }
+  .plots td { height: auto; }
+}

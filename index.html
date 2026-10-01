@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gardens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <h1 class="title">Gardens</h1>
+
+    <section class="top">
+      <nav class="garden-list" id="garden-list" aria-label="Gardens"></nav>
+
+      <figure class="plan">
+        <div class="dim dim-width">
+          <span class="dim-label" id="dim-width"></span>
+          <div class="dim-line-h"></div>
+        </div>
+        <div class="plan-row">
+          <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="">
+          <div class="dim dim-length">
+            <div class="dim-line-v"></div>
+            <span class="dim-label vertical" id="dim-length"></span>
+          </div>
+        </div>
+        <figcaption class="area" id="area"></figcaption>
+      </figure>
+    </section>
+
+    <table class="plots">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Type</th>
+          <th>Nb<br>Planche</th>
+          <th>Longueur<br>Planche</th>
+          <th>Largueur<br>Planche</th>
+          <th>Surface<br>Cultivated</th>
+        </tr>
+      </thead>
+      <tbody id="plots-body"></tbody>
+    </table>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
