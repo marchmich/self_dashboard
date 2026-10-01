@@ -1,6 +1,13 @@
-# Gardens dashboard
+# Farm dashboard
 
-A static dashboard: pick a garden (Bessasi A, Bessasi B, Derassi, Kourel) and the
+A static dashboard with two sections.
+
+**Agriculture** — a grid of vegetables with their harvest weight. Hover (or tab to)
+a vegetable to enlarge it and see how much is to be sold vs. kept, which garden
+it grows in, and its season. The donut chart totals the sold / consumed split
+across all vegetables. Data and icons live in `vegetables.js`.
+
+**Gardens** — pick a garden (Bessasi A, Bessasi B, Derassi, Kourel) and the
 dimensions around the plan, the total area, and the planche table update.
 
 Open `index.html` in a browser — no build step needed.

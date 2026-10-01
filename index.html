@@ -3,14 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gardens</title>
+  <title>Farm Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <section class="agriculture">
+    <div class="page">
+      <h1 class="title">Agriculture</h1>
+      <div class="veg-grid" id="veg-grid"></div>
+
+      <div class="share">
+        <ul class="donut-legend" id="donut-legend"></ul>
+        <div class="donut-wrap">
+          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+               aria-label="Share of the harvest to be sold versus kept for consumption"></svg>
+          <span class="donut-center" id="donut-center"></span>
+          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <main class="page">
-    <h1 class="title">Gardens</h1>
+    <h2 class="title">Gardens</h2>
 
     <section class="top">
       <nav class="garden-list" id="garden-list" aria-label="Gardens"></nav>
@@ -46,6 +63,8 @@
     </table>
   </main>
 
+  <script src="vegetables.js"></script>
+  <script src="agriculture.js"></script>
   <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
