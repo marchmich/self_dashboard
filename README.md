@@ -1,6 +1,7 @@
 # Farm dashboard
 
-A static dashboard with two sections.
+A static dashboard with three tabs: **Agriculture**, **Energy** and **Water**
+(Energy and Water are empty for now). The Agriculture tab has two sections.
 
 **Agriculture** — a grid of vegetables with their harvest weight. Hover (or tab to)
 a vegetable to enlarge it and see how much is to be sold vs. kept, which garden

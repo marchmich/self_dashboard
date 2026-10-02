@@ -6,66 +6,93 @@
   <title>Farm Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
-  <section class="agriculture">
-    <div class="page">
-      <h1 class="title">Agriculture</h1>
-      <div class="veg-grid" id="veg-grid"></div>
+  <header class="tabs-bar">
+    <nav class="tabs" role="tablist" aria-label="Dashboard sections">
+      <button class="tab" role="tab" id="tab-agriculture" aria-controls="panel-agriculture" data-tab="agriculture">Agriculture</button>
+      <button class="tab" role="tab" id="tab-energy" aria-controls="panel-energy" data-tab="energy">Energy</button>
+      <button class="tab" role="tab" id="tab-water" aria-controls="panel-water" data-tab="water">Water</button>
+    </nav>
+  </header>
 
-      <div class="share">
-        <ul class="donut-legend" id="donut-legend"></ul>
-        <div class="donut-wrap">
-          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-               aria-label="Share of the harvest to be sold versus kept for consumption"></svg>
-          <span class="donut-center" id="donut-center"></span>
-          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+  <div class="tab-panel" role="tabpanel" id="panel-agriculture" aria-labelledby="tab-agriculture">
+    <section class="page agriculture">
+      <h1 class="title">Agriculture</h1>
+      <div class="harvest">
+        <div class="veg-grid" id="veg-grid"></div>
+
+        <div class="share">
+          <div class="donut-wrap">
+            <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+                 aria-label="Share of the harvest to be sold versus kept for consumption"></svg>
+            <span class="donut-center" id="donut-center"></span>
+            <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+          </div>
+          <ul class="donut-legend" id="donut-legend"></ul>
         </div>
       </div>
-    </div>
-  </section>
-
-  <main class="page">
-    <h2 class="title">Gardens</h2>
-
-    <section class="top">
-      <nav class="garden-list" id="garden-list" aria-label="Gardens"></nav>
-
-      <figure class="plan">
-        <div class="dim dim-width">
-          <span class="dim-label" id="dim-width"></span>
-          <div class="dim-line-h"></div>
-        </div>
-        <div class="plan-row">
-          <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="">
-          <div class="dim dim-length">
-            <div class="dim-line-v"></div>
-            <span class="dim-label vertical" id="dim-length"></span>
-          </div>
-        </div>
-        <figcaption class="area" id="area"></figcaption>
-      </figure>
     </section>
 
-    <table class="plots">
-      <thead>
-        <tr>
-          <th>Status</th>
-          <th>Type</th>
-          <th>Nb<br>Planche</th>
-          <th>Longueur<br>Planche</th>
-          <th>Largueur<br>Planche</th>
-          <th>Surface<br>Cultivated</th>
-        </tr>
-      </thead>
-      <tbody id="plots-body"></tbody>
-    </table>
-  </main>
+    <section class="page gardens">
+      <h2 class="title">Gardens</h2>
 
-  <script src="vegetables.js?v=5"></script>
-  <script src="agriculture.js?v=5"></script>
-  <script src="data.js?v=5"></script>
-  <script src="script.js?v=5"></script>
+      <div class="top">
+        <nav class="garden-list" id="garden-list" aria-label="Gardens"></nav>
+
+        <figure class="plan">
+          <div class="dim dim-width">
+            <span class="dim-label" id="dim-width"></span>
+            <div class="dim-line-h"></div>
+          </div>
+          <div class="plan-row">
+            <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="">
+            <div class="dim dim-length">
+              <div class="dim-line-v"></div>
+              <span class="dim-label vertical" id="dim-length"></span>
+            </div>
+          </div>
+          <figcaption class="area" id="area"></figcaption>
+        </figure>
+      </div>
+
+      <div class="table-scroll">
+        <table class="plots">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Type</th>
+              <th>Nb<br>Planche</th>
+              <th>Longueur<br>Planche</th>
+              <th>Largueur<br>Planche</th>
+              <th>Surface<br>Cultivated</th>
+            </tr>
+          </thead>
+          <tbody id="plots-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="tab-panel" role="tabpanel" id="panel-energy" aria-labelledby="tab-energy" hidden>
+    <section class="page">
+      <h1 class="title">Energy</h1>
+      <p class="empty">Coming soon.</p>
+    </section>
+  </div>
+
+  <div class="tab-panel" role="tabpanel" id="panel-water" aria-labelledby="tab-water" hidden>
+    <section class="page">
+      <h1 class="title">Water</h1>
+      <p class="empty">Coming soon.</p>
+    </section>
+  </div>
+
+  <script src="tabs.js?v=6"></script>
+  <script src="vegetables.js?v=6"></script>
+  <script src="agriculture.js?v=6"></script>
+  <script src="data.js?v=6"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>
