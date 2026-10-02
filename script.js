@@ -27,8 +27,6 @@ function renderGarden(id) {
   areaEl.textContent = `${fmt(garden.width * garden.length)} M2`;
   imageEl.src = garden.image;
   imageEl.alt = `Plan du jardin ${garden.name}`;
-  // Keep the drawing's proportions in line with the real dimensions.
-  imageEl.style.aspectRatio = `${garden.width} / ${garden.length}`;
 
   bodyEl.innerHTML = "";
   const rows = garden.plots.length ? garden.plots : [{}];
