@@ -1,8 +1,15 @@
 :root {
-  --bg: #d9d9d9;
-  --ink: #111;
-  --link: #4a5bb5;
-  --table-bg: #fff;
+  /* Brand palette */
+  --teal: #0E5B74;   /* primary base */
+  --green: #52B641;  /* sustainability accent */
+  --yellow: #FCD116; /* solar accent */
+  --white: #FFFFFF;  /* background / neutral */
+
+  --bg: var(--white);
+  --ink: var(--teal);
+  --ink-dark: #0b2a35; /* text on green/yellow fills, where teal is too low-contrast */
+  --link: var(--teal);
+  --table-bg: var(--white);
 }
 
 * { box-sizing: border-box; }
@@ -13,6 +20,9 @@ body {
   color: var(--ink);
   font-family: "Inter", system-ui, sans-serif;
 }
+
+main.page { border-top: 8px solid var(--teal); max-width: none; }
+main.page > * { max-width: 1168px; margin-left: auto; margin-right: auto; }
 
 .page {
   max-width: 1200px;
@@ -49,11 +59,13 @@ body {
   text-underline-offset: 4px;
 }
 
-.garden-link:hover { color: var(--link); }
+.garden-link:hover { text-decoration-color: var(--green); }
 
 .garden-link.active {
   color: var(--link);
   font-size: 2.5rem;
+  text-decoration-color: var(--yellow);
+  text-decoration-thickness: 6px;
 }
 
 .plan {
@@ -128,13 +140,15 @@ body {
 
 .plots th,
 .plots td {
-  border: 2px solid #222;
+  border: 2px solid var(--teal);
   padding: 20px 8px;
   text-align: center;
   font-size: 1.5rem;
 }
 
-.plots th { font-weight: 600; font-size: 1.9rem; }
+.plots th { font-weight: 600; font-size: 1.9rem; background: var(--teal); color: var(--white); border-color: var(--white) var(--white) var(--teal); }
+.plots th:first-child { border-left-color: var(--teal); }
+.plots th:last-child { border-right-color: var(--teal); }
 .plots td { height: 130px; }
 
 @media (max-width: 720px) {
@@ -150,9 +164,9 @@ body {
 /* ---------- Agriculture ---------- */
 
 .agriculture {
-  --sold: #4c82ea;
-  --consumed: #5b2fa8;
-  background: #d0dbd6;
+  --sold: var(--teal);
+  --consumed: var(--green);
+  background: var(--white);
 }
 
 .veg-grid {
@@ -173,8 +187,9 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.veg-cell.cream { background: #e8dba9; }
-.veg-cell.green { background: #87ae7e; }
+.veg-cell.cream { background: var(--yellow); }
+.veg-cell.green { background: var(--green); }
+.veg-cell { color: var(--ink-dark); }
 
 .veg-name {
   margin: 0;
@@ -185,7 +200,7 @@ body {
   text-align: center;
 }
 
-.veg-icon { width: 55%; height: auto; color: var(--ink); }
+.veg-icon { width: 55%; height: auto; color: var(--ink-dark); }
 
 .veg-total {
   margin: 0;
@@ -201,7 +216,7 @@ body {
 }
 
 .veg-details div { display: flex; justify-content: space-between; gap: 6px; }
-.veg-details dt { color: #333; }
+.veg-details dt { color: var(--ink-dark); opacity: 0.8; }
 .veg-details dd { margin: 0; font-weight: 600; }
 
 .veg-cell.has-veg { cursor: pointer; outline: none; }
@@ -210,7 +225,7 @@ body {
 .veg-cell.has-veg:focus-visible {
   transform: scale(1.35);
   z-index: 2;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(14, 91, 116, 0.4);
   border-radius: 6px;
 }
 
@@ -240,12 +255,12 @@ body {
   flex-direction: column;
   gap: 16px;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--teal);
 }
 
 .donut-legend li { display: flex; align-items: center; gap: 10px; }
 .swatch { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-.legend-value { color: #666; }
+.legend-value { color: var(--teal); font-weight: 600; }
 
 .donut-wrap { position: relative; width: min(420px, 80vw); }
 .donut { display: block; width: 100%; transform: rotate(-90deg); }
@@ -266,18 +281,19 @@ body {
   display: grid;
   place-items: center;
   font-size: clamp(1.1rem, 3vw, 1.6rem);
-  color: #333;
+  color: var(--teal);
   pointer-events: none;
 }
 
 .donut-tooltip {
   position: absolute;
-  background: #fff;
+  background: var(--white);
+  border: 2px solid var(--teal);
   color: var(--ink);
   border-radius: 6px;
   padding: 8px 10px;
   font-size: 0.9rem;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 14px rgba(14, 91, 116, 0.25);
   pointer-events: none;
   white-space: nowrap;
 }
