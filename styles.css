@@ -5,7 +5,8 @@
   --yellow: #FCD116; /* solar accent */
   --white: #FFFFFF;  /* background / neutral */
   --light-gray: #E4E6E8;
-  --orange: rgb(246, 126, 32); /* vegetable hover */
+  --orange: rgb(246, 126, 32); /* vegetable hover, gardener squares */
+  --pink: #F48FB8;             /* gardener hover */
 
   --bg: var(--white);
   --ink: var(--teal);
@@ -144,7 +145,7 @@ body {
 .veg-cell.has-veg { cursor: pointer; outline: none; }
 
 .veg-cell.has-veg:hover,
-.veg-cell.has-veg:focus-visible {
+.veg-cell.has-veg:focus {
   transform: scale(1.5);
   z-index: 2;
   background: var(--orange);
@@ -153,13 +154,13 @@ body {
 }
 
 .veg-cell.has-veg:hover .veg-icon,
-.veg-cell.has-veg:focus-visible .veg-icon { width: 30%; }
+.veg-cell.has-veg:focus .veg-icon { width: 30%; }
 
 .veg-cell.has-veg:hover .veg-total,
-.veg-cell.has-veg:focus-visible .veg-total { display: none; }
+.veg-cell.has-veg:focus .veg-total { display: none; }
 
 .veg-cell.has-veg:hover .veg-details,
-.veg-cell.has-veg:focus-visible .veg-details { display: block; }
+.veg-cell.has-veg:focus .veg-details { display: block; }
 
 .share {
   flex: 0 1 300px;
@@ -338,12 +339,99 @@ body {
 .plots th:first-child { border-left-color: var(--teal); }
 .plots th:last-child { border-right-color: var(--teal); }
 
+/* ---------- Agriculture: gardeners ---------- */
+
+.subtitle {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.4rem;
+  margin: 36px 0 14px;
+}
+
+.subtitle-note {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.people-grid {
+  display: grid;
+  /* An odd column count keeps the yellow/orange checkerboard. */
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+
+.person-cell {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 6px;
+  color: var(--ink-dark);
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.person-cell.yellow { background: var(--yellow); }
+.person-cell.orange { background: var(--orange); }
+
+.person-name {
+  margin: 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.person-icon { width: 34%; height: auto; }
+
+.person-total { margin: 0; font-weight: 600; font-size: clamp(0.7rem, 1.3vw, 0.85rem); }
+
+.person-details {
+  display: none;
+  margin: 0;
+  width: 100%;
+  font-size: 0.48rem;
+  line-height: 1.35;
+}
+
+.person-details div { display: flex; justify-content: space-between; gap: 4px; }
+.person-details dt { opacity: 0.8; }
+.person-details dd { margin: 0; font-weight: 600; text-align: right; }
+
+.person-cell:hover,
+.person-cell:focus {
+  transform: scale(1.5);
+  z-index: 2;
+  background: var(--pink);
+  box-shadow: 0 8px 24px rgba(14, 91, 116, 0.35);
+  border-radius: 6px;
+}
+
+.person-cell:hover .person-icon,
+.person-cell:focus .person-icon { width: 22%; }
+
+.person-cell:hover .person-total,
+.person-cell:focus .person-total { display: none; }
+
+.person-cell:hover .person-details,
+.person-cell:focus .person-details { display: block; }
+
+@media (max-width: 720px) {
+  .people-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .person-name { font-size: 0.75rem; }
+  .person-details { font-size: 0.45rem; }
+}
+
 @media (max-width: 720px) {
   .garden-list { flex-direction: row; flex-wrap: wrap; gap: 16px; padding-top: 0; }
   .garden-link, .garden-link.active { font-size: 1rem; }
   .plan { margin: 0 auto; }
   .veg-cell { padding: 4px 2px; }
   .veg-cell.has-veg:hover,
-  .veg-cell.has-veg:focus-visible { transform: scale(1.7); }
+  .veg-cell.has-veg:focus { transform: scale(1.7); }
   .veg-details { font-size: 0.42rem; }
 }
