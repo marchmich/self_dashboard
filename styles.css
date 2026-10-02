@@ -4,6 +4,8 @@
   --green: #52B641;  /* sustainability accent */
   --yellow: #FCD116; /* solar accent */
   --white: #FFFFFF;  /* background / neutral */
+  --light-gray: #E4E6E8;
+  --orange: rgb(246, 126, 32); /* vegetable hover */
 
   --bg: var(--white);
   --ink: var(--teal);
@@ -184,11 +186,11 @@ main.page > * { max-width: 1168px; margin-left: auto; margin-right: auto; }
   align-items: center;
   justify-content: space-between;
   padding: 10px 6px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .veg-cell.cream { background: var(--yellow); }
-.veg-cell.green { background: var(--green); }
+.veg-cell.green { background: var(--light-gray); }
 .veg-cell { color: var(--ink-dark); }
 
 .veg-name {
@@ -225,6 +227,7 @@ main.page > * { max-width: 1168px; margin-left: auto; margin-right: auto; }
 .veg-cell.has-veg:focus-visible {
   transform: scale(1.35);
   z-index: 2;
+  background: var(--orange);
   box-shadow: 0 10px 30px rgba(14, 91, 116, 0.4);
   border-radius: 6px;
 }
