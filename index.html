@@ -6,7 +6,7 @@
   <title>Farm Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
   <header class="tabs-bar">
@@ -16,6 +16,8 @@
       <button class="tab" role="tab" id="tab-water" aria-controls="panel-water" data-tab="water">Water</button>
     </nav>
   </header>
+
+  <p class="load-status" id="load-status" hidden></p>
 
   <div class="tab-panel" role="tabpanel" id="panel-agriculture" aria-labelledby="tab-agriculture">
     <section class="page agriculture">
@@ -47,7 +49,7 @@
             <div class="dim-line-h"></div>
           </div>
           <div class="plan-row">
-            <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="">
+            <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="Plan du jardin">
             <div class="dim dim-length">
               <div class="dim-line-v"></div>
               <span class="dim-label vertical" id="dim-length"></span>
@@ -92,11 +94,16 @@
     </section>
   </div>
 
-  <script src="tabs.js?v=7"></script>
-  <script src="vegetables.js?v=7"></script>
-  <script src="agriculture.js?v=7"></script>
-  <script src="data.js?v=7"></script>
-  <script src="gardeners.js?v=7"></script>
-  <script src="script.js?v=7"></script>
+  <!-- Shared display code -->
+  <script src="common.js?v=8"></script>
+  <script src="tabs.js?v=8"></script>
+  <script src="icons.js?v=8"></script>
+  <script src="agriculture.js?v=8"></script>
+  <script src="script.js?v=8"></script>
+  <!-- Data (GitHub version only; the Apps Script version reads the Google Sheet) -->
+  <script src="vegetables.js?v=8"></script>
+  <script src="data.js?v=8"></script>
+  <script src="gardeners.js?v=8"></script>
+  <script src="main.js?v=8"></script>
 </body>
 </html>

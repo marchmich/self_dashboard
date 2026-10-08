@@ -1,53 +1,57 @@
 const listEl = document.getElementById("garden-list");
-const imageEl = document.getElementById("garden-image");
 const widthEl = document.getElementById("dim-width");
 const lengthEl = document.getElementById("dim-length");
 const areaEl = document.getElementById("area");
 const bodyEl = document.getElementById("plots-body");
 const gardenersEl = document.getElementById("gardeners-grid");
 const gardenersNoteEl = document.getElementById("gardeners-note");
+const GARDEN_KEY = "dashboard-garden";
 
 const PERSON_ICON = `<svg class="person-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
   stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <circle cx="32" cy="22" r="10"/><path d="M14 54c2-11 9-18 18-18s16 7 18 18"/></svg>`;
 
 // Show "—" until a stat has been filled in.
-const stat = (value, unit = "") => (value == null ? "—" : `${fmt(value)}${unit}`);
+const stat = (value, unit = "") => (isNum(value) ? `${fmt(value)}${unit}` : "—");
 
-const fmt = (n) => Number(n.toFixed(2)).toLocaleString("fr-FR", { useGrouping: false });
+let gardensData = {};
+let gardenersData = {};
 
 function renderList(selectedId) {
   listEl.innerHTML = "";
-  for (const [id, garden] of Object.entries(GARDENS)) {
+  for (const [id, garden] of Object.entries(gardensData)) {
     const link = document.createElement("a");
     link.href = `#${id}`;
     link.textContent = garden.name;
     link.className = "garden-link" + (id === selectedId ? " active" : "");
     if (id === selectedId) link.setAttribute("aria-current", "page");
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      selectGarden(id);
+    });
     listEl.appendChild(link);
   }
 }
 
 function renderGarden(id) {
-  const garden = GARDENS[id];
+  const garden = gardensData[id];
 
-  widthEl.textContent = `${fmt(garden.width)}m`;
-  lengthEl.textContent = `${fmt(garden.length)}m`;
-  areaEl.textContent = `${fmt(garden.width * garden.length)} M2`;
-  imageEl.src = garden.image;
-  imageEl.alt = `Plan du jardin ${garden.name}`;
+  widthEl.textContent = isNum(garden.width) ? `${fmt(garden.width)}m` : "—";
+  lengthEl.textContent = isNum(garden.length) ? `${fmt(garden.length)}m` : "—";
+  areaEl.textContent = isNum(garden.width) && isNum(garden.length)
+    ? `${fmt(garden.width * garden.length)} M2` : "—";
 
   bodyEl.innerHTML = "";
-  const rows = garden.plots.length ? garden.plots : [{}];
+  const rows = garden.plots && garden.plots.length ? garden.plots : [{}];
   for (const plot of rows) {
-    const surface = plot.nbPlanche * plot.longueur * plot.largeur;
+    const hasSize = [plot.nbPlanche, plot.longueur, plot.largeur].every(isNum);
     const cells = [
       plot.status ?? "",
       plot.type ?? "",
       plot.nbPlanche ?? "",
-      plot.longueur != null ? `${fmt(plot.longueur)} m` : "",
-      plot.largeur != null ? `${fmt(plot.largeur)} m` : "",
-      Number.isFinite(surface) ? `${fmt(surface)} m²` : "",
+      isNum(plot.longueur) ? `${fmt(plot.longueur)} m` : "",
+      isNum(plot.largeur) ? `${fmt(plot.largeur)} m` : "",
+      hasSize ? `${fmt(plot.nbPlanche * plot.longueur * plot.largeur)} m²` : "",
     ];
     const tr = document.createElement("tr");
     for (const value of cells) {
@@ -60,8 +64,8 @@ function renderGarden(id) {
 }
 
 function renderGardeners(id) {
-  const people = (GARDENERS[id] || []).map((p) => (typeof p === "string" ? { name: p } : p));
-  gardenersNoteEl.textContent = `· ${GARDENS[id].name} (${people.length})`;
+  const people = (gardenersData[id] || []).map((p) => (typeof p === "string" ? { name: p } : p));
+  gardenersNoteEl.textContent = `· ${gardensData[id].name} (${people.length})`;
   gardenersEl.innerHTML = "";
   people.forEach((person, i) => {
     const cell = document.createElement("div");
@@ -85,14 +89,33 @@ function renderGardeners(id) {
   });
 }
 
-function update() {
-  const ids = Object.keys(GARDENS);
-  const hash = location.hash.slice(1);
-  const id = ids.includes(hash) ? hash : ids[0];
+function currentGardenId() {
+  const ids = Object.keys(gardensData);
+  const fromHash = location.hash.slice(1);
+  const saved = storage.get(GARDEN_KEY);
+  if (ids.includes(fromHash)) return fromHash;
+  if (ids.includes(saved)) return saved;
+  return ids[0];
+}
+
+function showGarden(id) {
+  if (!id) return; // no gardens yet
   renderList(id);
   renderGarden(id);
   renderGardeners(id);
 }
 
-window.addEventListener("hashchange", update);
-update();
+function selectGarden(id) {
+  storage.set(GARDEN_KEY, id);
+  // Keep the address in sync where the browser allows it (it may not inside Apps Script).
+  try { history.replaceState(null, "", `#${id}`); } catch {}
+  showGarden(id);
+}
+
+function renderGardens(gardens, gardeners) {
+  gardensData = gardens;
+  gardenersData = gardeners;
+  showGarden(currentGardenId());
+}
+
+window.addEventListener("hashchange", () => showGarden(currentGardenId()));
