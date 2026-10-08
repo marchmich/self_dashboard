@@ -105,90 +105,97 @@ body {
 
 .harvest {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 40px;
+  align-items: flex-start;
+  gap: 32px;
   flex-wrap: wrap;
+}
+
+.harvest-main {
+  flex: 0 1 480px;
+  min-width: 0;
 }
 
 .veg-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  flex: 1 1 520px;
-  max-width: 600px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 480px;
 }
 
 .veg-cell {
-  position: relative;
   aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 10px;
   padding: 8px 4px;
   color: var(--ink-dark);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.15s ease;
 }
 
 .veg-cell.cream { background: var(--yellow); }
 .veg-cell.green { background: var(--light-gray); }
 
+.veg-cell:hover,
+.veg-cell:focus,
+.veg-cell.selected { background: var(--orange); }
+
+.veg-cell:focus-visible { box-shadow: inset 0 0 0 3px var(--teal); }
+
 .veg-name {
   margin: 0;
   font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(0.6rem, 1.4vw, 0.9rem);
+  font-size: clamp(0.65rem, 1.4vw, 0.9rem);
   max-width: 100%;
   overflow-wrap: anywhere;
   text-align: center;
 }
 
-.veg-icon { width: 48%; height: auto; color: var(--ink-dark); }
+.veg-icon { width: 46%; height: auto; }
 
-.veg-total {
+/* Details panel to the right of the grid */
+.veg-panel {
+  flex: 1 1 260px;
+  max-width: 340px;
+  position: sticky;
+  top: 64px; /* below the tab bar */
+  border: 2px solid var(--teal);
+  border-radius: 8px;
+  padding: 18px 20px;
+  color: var(--ink);
+}
+
+.veg-panel-hint { margin: 0; opacity: 0.75; }
+
+.veg-panel-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.veg-panel-icon { width: 56px; height: 56px; flex-shrink: 0; color: var(--orange); }
+
+.veg-panel-name {
   margin: 0;
-  font-weight: 600;
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.4rem;
 }
 
-.veg-details {
-  display: none;
-  margin: 0;
-  width: 100%;
-  font-size: 0.55rem;
-  line-height: 1.35;
+.veg-panel-stats { margin: 0; }
+.veg-panel-stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid var(--light-gray);
 }
-
-.veg-details div { display: flex; justify-content: space-between; gap: 4px; }
-.veg-details dt { opacity: 0.8; }
-.veg-details dd { margin: 0; font-weight: 600; text-align: right; }
-
-.veg-cell.has-veg { cursor: pointer; outline: none; }
-
-.veg-cell.has-veg:hover,
-.veg-cell.has-veg:focus {
-  transform: scale(1.5);
-  z-index: 2;
-  background: var(--orange);
-  box-shadow: 0 8px 24px rgba(14, 91, 116, 0.35);
-  border-radius: 6px;
-}
-
-.veg-cell.has-veg:hover .veg-icon,
-.veg-cell.has-veg:focus .veg-icon { width: 30%; }
-
-.veg-cell.has-veg:hover .veg-total,
-.veg-cell.has-veg:focus .veg-total { display: none; }
-
-.veg-cell.has-veg:hover .veg-details,
-.veg-cell.has-veg:focus .veg-details { display: block; }
+.veg-panel-stats dt { opacity: 0.8; }
+.veg-panel-stats dd { margin: 0; font-weight: 600; text-align: right; }
 
 .share {
-  flex: 0 1 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  margin: 0 auto;
+  gap: 16px;
+  max-width: 480px;
+  margin-top: 32px;
 }
 
 .donut-legend {
@@ -450,10 +457,13 @@ body {
   .garden-list { flex-direction: row; flex-wrap: wrap; gap: 16px; padding-top: 0; }
   .garden-link, .garden-link.active { font-size: 1rem; }
   .plan { margin: 0 auto; }
-  .veg-cell { padding: 4px 2px; }
-  .veg-cell.has-veg:hover,
-  .veg-cell.has-veg:focus { transform: scale(1.7); }
-  .veg-details { font-size: 0.42rem; }
+  .veg-cell { padding: 4px 2px; gap: 6px; }
+  /* On phones the details sit right under the grid, above the chart. */
+  .harvest { display: grid; grid-template-areas: "grid" "panel" "chart"; gap: 20px; }
+  .harvest-main { display: contents; }
+  .veg-grid { grid-area: grid; max-width: none; }
+  .veg-panel { grid-area: panel; position: static; max-width: none; }
+  .share { grid-area: chart; max-width: none; margin-top: 8px; }
 }
 
 </style>
@@ -473,17 +483,23 @@ body {
     <section class="page agriculture">
       <h1 class="title">Agriculture</h1>
       <div class="harvest">
-        <div class="veg-grid" id="veg-grid"></div>
+        <div class="harvest-main">
+          <div class="veg-grid" id="veg-grid"></div>
 
-        <div class="share">
-          <div class="donut-wrap">
-            <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-                 aria-label="Share of the harvest to be sold versus kept for consumption"></svg>
-            <span class="donut-center" id="donut-center"></span>
-            <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+          <div class="share">
+            <div class="donut-wrap">
+              <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+                   aria-label="Share of the harvest to be sold versus kept for consumption"></svg>
+              <span class="donut-center" id="donut-center"></span>
+              <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+            </div>
+            <ul class="donut-legend" id="donut-legend"></ul>
           </div>
-          <ul class="donut-legend" id="donut-legend"></ul>
         </div>
+
+        <aside class="veg-panel" id="veg-panel" aria-live="polite">
+          <p class="veg-panel-hint">Hover over a vegetable to see its details.</p>
+        </aside>
       </div>
     </section>
 
@@ -605,49 +621,65 @@ const VEG_ICONS = {
   chili: '<path d="M30 18c8 2 14 10 12 20-2 10-10 16-16 20 4-8 6-14 4-22-1-6-4-10-6-12 2-4 4-6 6-6z"/><path d="M30 18c0-4 2-8 6-10"/>',
   eggplant: '<path d="M22 22c-6 8-4 22 4 30 6 6 16 6 18 0 2-6-4-10-8-18-4-8-4-12-4-14-4-2-8-1-10 2z"/><path d="M26 18c-4 0-8 2-10 6 4-2 7-2 10-1 2 3 5 4 8 3 1-3 0-6-2-8-2 0-4 0-6 0z"/><path d="M30 18c2-4 4-6 8-8"/>',
   leaf: '<path d="M32 8c-12 10-16 22-12 34 2 6 6 10 12 14 6-4 10-8 12-14 4-12 0-24-12-34z"/><path d="M32 12v48M32 24l-7-5M32 24l7-5M32 34l-9-6M32 34l9-6M32 44l-8-6M32 44l8-6"/>',
+  peanut: '<path d="M32 8c-8 0-12 6-11 13 1 5 4 7 4 11s-3 6-4 11c-1 7 3 13 11 13s12-6 11-13c-1-5-4-7-4-11s3-6 4-11c1-7-3-13-11-13z"/><path d="M27 16l2 2M35 20l2-2M27 42l2 2M35 46l2-2M31 30h2"/>',
+  banana: '<path d="M14 16c1 20 12 34 32 37 5 1 7-2 5-4-14-5-23-15-27-31-2-6-10-8-10-2z"/><path d="M14 16l-3-7M19 21c3 13 10 22 20 27"/>',
+  orange: '<circle cx="32" cy="37" r="20"/><path d="M32 17v-5M32 13c2-5 7-7 12-6-1 6-6 8-12 6z"/><path d="M25 32h.01M38 30h.01M31 44h.01M41 41h.01M23 42h.01"/>',
+  papaya: '<ellipse cx="32" cy="35" rx="15" ry="23"/><ellipse cx="32" cy="38" rx="6" ry="12"/><path d="M30 33h.01M34 37h.01M30 41h.01M34 44h.01M32 12V8"/>',
+  sprig: '<path d="M32 58V12"/><path d="M32 20c-6-1-10-5-10-10 6 0 10 4 10 10zM32 20c6-1 10-5 10-10-6 0-10 4-10 10zM32 34c-7-1-12-6-12-12 7 0 12 5 12 12zM32 34c7-1 12-6 12-12-7 0-12 5-12 12zM32 48c-7-1-12-6-12-12 7 0 12 5 12 12zM32 48c7-1 12-6 12-12-7 0-12 5-12 12z"/>',
 };
 </script>
   <script>
-const COLUMNS = 5;
+const COLUMNS = 4;
 
-function iconSvg(key) {
+function iconSvg(key, className = "veg-icon") {
   const paths = VEG_ICONS[key] || VEG_ICONS.leaf; // unknown icon names fall back to a leaf
-  return `<svg class="veg-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
+  return `<svg class="${className}" viewBox="0 0 64 64" fill="none" stroke="currentColor"
     stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+// The panel to the right of the grid shows the vegetable last hovered, focused or tapped.
+function showVegDetails(veg, cell) {
+  const sold = veg.toBeSold || 0;
+  const eaten = veg.forConsumption || 0;
+  const total = sold + eaten;
+  const share = total ? `${Math.round((sold / total) * 100)}%` : "—";
+  document.getElementById("veg-panel").innerHTML = `
+    <div class="veg-panel-head">
+      ${iconSvg(veg.icon, "veg-panel-icon")}
+      <h3 class="veg-panel-name">${escapeHtml(veg.name)}</h3>
+    </div>
+    <dl class="veg-panel-stats">
+      <div><dt>Total harvest</dt><dd>${fmtKg(total)}</dd></div>
+      <div><dt>To be sold</dt><dd>${fmtKg(sold)}</dd></div>
+      <div><dt>For consumption</dt><dd>${fmtKg(eaten)}</dd></div>
+      <div><dt>Share sold</dt><dd>${share}</dd></div>
+      <div><dt>Garden</dt><dd>${escapeHtml(veg.garden || "—")}</dd></div>
+      <div><dt>Season</dt><dd>${escapeHtml(veg.season || "—")}</dd></div>
+    </dl>`;
+  document.querySelectorAll(".veg-cell.selected").forEach((c) => c.classList.remove("selected"));
+  cell.classList.add("selected");
 }
 
 function renderGrid(vegetables) {
   const grid = document.getElementById("veg-grid");
   grid.innerHTML = "";
-  // Fill the last row so the checkerboard stays complete.
-  const cellCount = Math.max(1, Math.ceil(vegetables.length / COLUMNS)) * COLUMNS;
-  for (let i = 0; i < cellCount; i++) {
-    const veg = vegetables[i];
+  vegetables.forEach((veg, i) => {
     const row = Math.floor(i / COLUMNS);
     const col = i % COLUMNS;
     const cell = document.createElement("div");
-    cell.className = "veg-cell " + ((row + col) % 2 ? "green" : "cream");
-
-    if (veg) {
-      const sold = veg.toBeSold || 0;
-      const eaten = veg.forConsumption || 0;
-      const total = sold + eaten;
-      cell.classList.add("has-veg");
-      cell.tabIndex = 0;
-      cell.setAttribute("aria-label", `${veg.name}, ${fmtKg(total)}`);
-      cell.innerHTML = `
-        <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
-        ${iconSvg(veg.icon)}
-        <p class="veg-total">${fmtKg(total)}</p>
-        <dl class="veg-details">
-          <div><dt>To be sold</dt><dd>${fmtKg(sold)}</dd></div>
-          <div><dt>For consumption</dt><dd>${fmtKg(eaten)}</dd></div>
-          <div><dt>Garden</dt><dd>${escapeHtml(veg.garden || "—")}</dd></div>
-          <div><dt>Season</dt><dd>${escapeHtml(veg.season || "—")}</dd></div>
-        </dl>`;
-    }
+    // Alternate by row and column so the colours form a checkerboard.
+    cell.className = "veg-cell has-veg " + ((row + col) % 2 ? "green" : "cream");
+    cell.tabIndex = 0;
+    cell.setAttribute("aria-label", veg.name);
+    cell.innerHTML = `
+      <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
+      ${iconSvg(veg.icon)}`;
+    const show = () => showVegDetails(veg, cell);
+    cell.addEventListener("mouseenter", show);
+    cell.addEventListener("focus", show);
+    cell.addEventListener("click", show);
     grid.appendChild(cell);
-  }
+  });
 }
 
 function renderDonut(vegetables) {
@@ -829,19 +861,25 @@ window.addEventListener("hashchange", () => showGarden(currentGardenId()));
   <script>
 // Harvest data — edit these values with your real figures.
 // The donut chart totals toBeSold vs forConsumption across all vegetables.
+// Placeholder numbers (6 kg sold / 14 kg kept each) until real figures are in.
 const VEGETABLES = [
-  { name: "Onions",     icon: "onion",     toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Mars – Mai" },
-  { name: "Tomatoes",   icon: "tomato",    toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Juin – Sept" },
-  { name: "Carrots",    icon: "carrot",    toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Avril – Juil" },
-  { name: "Lettuce",    icon: "lettuce",   toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Toute l'année" },
-  { name: "Potato",     icon: "potato",    toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Mai – Août" },
-  { name: "Choux",      icon: "cabbage",   toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Oct – Fév" },
-  { name: "Gumbo",      icon: "okra",      toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Juil – Oct" },
-  { name: "Cucumber",   icon: "cucumber",  toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Juin – Août" },
-  { name: "BellPepper", icon: "bellpepper",toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Juil – Sept" },
-  { name: "RedPepper",  icon: "chili",     toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Juil – Oct" },
-  { name: "Eggplant",   icon: "eggplant",  toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Juil – Sept" },
-  { name: "Amaranth",   icon: "leaf",      toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Mai – Sept" },
+  { name: "Amaranth",    icon: "leaf",       toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Mai – Sept" },
+  { name: "Peanut",      icon: "peanut",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
+  { name: "Eggplant",    icon: "eggplant",   toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Juil – Sept" },
+  { name: "Banana",      icon: "banana",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
+  { name: "Carrot",      icon: "carrot",     toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Avril – Juil" },
+  { name: "Cabbage",     icon: "cabbage",    toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Oct – Fév" },
+  { name: "Cucumber",    icon: "cucumber",   toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Juin – Août" },
+  { name: "Dossi",       icon: "sprig",      toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
+  { name: "Okra",        icon: "okra",       toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Juil – Oct" },
+  { name: "Lettuce",     icon: "lettuce",    toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Toute l'année" },
+  { name: "Onion",       icon: "onion",      toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Mars – Mai" },
+  { name: "Orange",      icon: "orange",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
+  { name: "Papaya",      icon: "papaya",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
+  { name: "Hot pepper",  icon: "chili",      toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Juil – Oct" },
+  { name: "Bell pepper", icon: "bellpepper", toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Juil – Sept" },
+  { name: "Potato",      icon: "potato",     toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Mai – Août" },
+  { name: "Tomato",      icon: "tomato",     toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Juin – Sept" },
 ];
 </script>
   <script>

@@ -1,43 +1,54 @@
-const COLUMNS = 5;
+const COLUMNS = 4;
 
-function iconSvg(key) {
+function iconSvg(key, className = "veg-icon") {
   const paths = VEG_ICONS[key] || VEG_ICONS.leaf; // unknown icon names fall back to a leaf
-  return `<svg class="veg-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
+  return `<svg class="${className}" viewBox="0 0 64 64" fill="none" stroke="currentColor"
     stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+// The panel to the right of the grid shows the vegetable last hovered, focused or tapped.
+function showVegDetails(veg, cell) {
+  const sold = veg.toBeSold || 0;
+  const eaten = veg.forConsumption || 0;
+  const total = sold + eaten;
+  const share = total ? `${Math.round((sold / total) * 100)}%` : "—";
+  document.getElementById("veg-panel").innerHTML = `
+    <div class="veg-panel-head">
+      ${iconSvg(veg.icon, "veg-panel-icon")}
+      <h3 class="veg-panel-name">${escapeHtml(veg.name)}</h3>
+    </div>
+    <dl class="veg-panel-stats">
+      <div><dt>Total harvest</dt><dd>${fmtKg(total)}</dd></div>
+      <div><dt>To be sold</dt><dd>${fmtKg(sold)}</dd></div>
+      <div><dt>For consumption</dt><dd>${fmtKg(eaten)}</dd></div>
+      <div><dt>Share sold</dt><dd>${share}</dd></div>
+      <div><dt>Garden</dt><dd>${escapeHtml(veg.garden || "—")}</dd></div>
+      <div><dt>Season</dt><dd>${escapeHtml(veg.season || "—")}</dd></div>
+    </dl>`;
+  document.querySelectorAll(".veg-cell.selected").forEach((c) => c.classList.remove("selected"));
+  cell.classList.add("selected");
 }
 
 function renderGrid(vegetables) {
   const grid = document.getElementById("veg-grid");
   grid.innerHTML = "";
-  // Fill the last row so the checkerboard stays complete.
-  const cellCount = Math.max(1, Math.ceil(vegetables.length / COLUMNS)) * COLUMNS;
-  for (let i = 0; i < cellCount; i++) {
-    const veg = vegetables[i];
+  vegetables.forEach((veg, i) => {
     const row = Math.floor(i / COLUMNS);
     const col = i % COLUMNS;
     const cell = document.createElement("div");
-    cell.className = "veg-cell " + ((row + col) % 2 ? "green" : "cream");
-
-    if (veg) {
-      const sold = veg.toBeSold || 0;
-      const eaten = veg.forConsumption || 0;
-      const total = sold + eaten;
-      cell.classList.add("has-veg");
-      cell.tabIndex = 0;
-      cell.setAttribute("aria-label", `${veg.name}, ${fmtKg(total)}`);
-      cell.innerHTML = `
-        <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
-        ${iconSvg(veg.icon)}
-        <p class="veg-total">${fmtKg(total)}</p>
-        <dl class="veg-details">
-          <div><dt>To be sold</dt><dd>${fmtKg(sold)}</dd></div>
-          <div><dt>For consumption</dt><dd>${fmtKg(eaten)}</dd></div>
-          <div><dt>Garden</dt><dd>${escapeHtml(veg.garden || "—")}</dd></div>
-          <div><dt>Season</dt><dd>${escapeHtml(veg.season || "—")}</dd></div>
-        </dl>`;
-    }
+    // Alternate by row and column so the colours form a checkerboard.
+    cell.className = "veg-cell has-veg " + ((row + col) % 2 ? "green" : "cream");
+    cell.tabIndex = 0;
+    cell.setAttribute("aria-label", veg.name);
+    cell.innerHTML = `
+      <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
+      ${iconSvg(veg.icon)}`;
+    const show = () => showVegDetails(veg, cell);
+    cell.addEventListener("mouseenter", show);
+    cell.addEventListener("focus", show);
+    cell.addEventListener("click", show);
     grid.appendChild(cell);
-  }
+  });
 }
 
 function renderDonut(vegetables) {
