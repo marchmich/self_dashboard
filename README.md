@@ -6,7 +6,7 @@ A static dashboard with three tabs: **Agriculture**, **Energy** and **Water**
 **Agriculture** — a grid of vegetables with their harvest weight. Hover, tap or tab to
 a vegetable to enlarge it and see how much is to be sold vs. kept, which garden
 it grows in, and its season. The donut chart totals the sold / consumed split
-across all vegetables. Data lives in `vegetables.js`, icons in `icons.js`.
+across all vegetables. Example data lives in `vegetables.js`; icons (and which product gets which) in `icons.js`.
 
 **Gardens** — pick a garden (Bessasi A, Bessasi B, Derassi, Kourel) and the
 dimensions around the plan, the total area, and the planche table update.
@@ -15,10 +15,10 @@ Open `index.html` in a browser — no build step needed.
 
 ## Two versions
 
-- **GitHub Pages** (this folder): reads the numbers from `data.js`,
-  `vegetables.js` and `gardeners.js`. Anyone with the address can see it.
-- **Google Apps Script** (`apps-script/`): the same page, reading the numbers
-  from a private Google Sheet. See [`apps-script/SETUP.md`](apps-script/SETUP.md).
+- **GitHub Pages** (this folder): public, with **example** harvest numbers in
+  `vegetables.js`, and garden data from `data.js` and `gardeners.js`.
+- **Google Apps Script** (`apps-script/`): the same page, reading the real
+  harvest numbers from a private Google Sheet. See [`apps-script/SETUP.md`](apps-script/SETUP.md).
 
 Both share the display code (`common.js`, `tabs.js`, `icons.js`,
 `agriculture.js`, `script.js`, `styles.css`). After changing any of it, run

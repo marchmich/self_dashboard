@@ -1,83 +1,87 @@
 # Farm Dashboard on Google Apps Script
 
-This version of the dashboard reads its numbers from a **private Google Sheet**.
-You share a link to the dashboard; nobody gets access to the sheet itself, and
-only the columns the dashboard shows are ever sent to the page.
+This version of the dashboard reads its harvest numbers from your **private
+Google Sheet**. You share a link to the dashboard; nobody gets access to the
+sheet itself, and only the harvest columns are ever sent to the page.
 
 You need two files from this folder: **`Code.gs`** and **`Index.html`**.
 
-> **Not using the sheet yet?** Use **`Index-no-sheet.html`** instead of
-> `Index.html` (paste it into the file named `Index`, same as below). It has the
-> numbers built in, like the GitHub site, and needs no Google Sheet. Skip step 1.
-> When the sheet is ready, replace its contents with `Index.html` and publish a
-> new version.
+## 1. Keep the sheet private
 
-## 1. Create the Google Sheet
+In the Google Sheet, click **Share** and check that **General access** is
+**Restricted** (only the people listed can open it). Do **not** use
+File → Share → *Publish to web*.
 
-1. In Google Drive, click **New → File upload** and pick `Farm-Dashboard-Sheet.xlsx`
-   (the starter sheet with all the gardens, gardeners and vegetables).
-2. Open it and choose **File → Save as Google Sheets**. Use that Google Sheets copy
-   from now on; you can delete the uploaded `.xlsx`.
+## 2. Find the sheet's ID
 
-Keep the sheet **private** (don't use "Publish to web", and only share it with
-people who should edit the numbers).
+Copy it from the sheet's address: it's the long code between `/d/` and `/edit`.
 
-## 2. Add the dashboard to the sheet
+    https://docs.google.com/spreadsheets/d/1AbC...xYz/edit
+                                           ^^^^^^^^^ this part
 
-1. In the Google Sheet, open **Extensions → Apps Script**.
-2. In the file `Code.gs`, delete what's there and paste the full contents of
-   `apps-script/Code.gs`.
-3. Click **＋ (Add a file) → HTML**, name it **`Index`** (exactly; Apps Script
-   adds `.html` itself), delete what's there, and paste the full contents of
-   `apps-script/Index.html`.
-4. Click **Save** (the disk icon).
+## 3. Put the code in Apps Script
 
-## 3. Publish the dashboard
+1. Open your Apps Script project.
+2. In **`Code.gs`**: select all, delete, paste the new `apps-script/Code.gs`.
+   At the top, paste your sheet's ID between the quotes:
+   `const SHEET_ID = '1AbC...xYz';`
+   If the harvest table isn't the **first tab** of the sheet, also type its tab
+   name: `const HARVEST_TAB = 'Agriculture';`
+3. In **`Index`**: select all, delete, paste the new `apps-script/Index.html`.
+4. Click **Save**.
 
-1. Click **Deploy → New deployment**.
-2. Click the gear next to "Select type" and choose **Web app**.
-3. Set:
-   - **Execute as:** *Me*
-   - **Who has access:** pick who may open the dashboard:
-     - *Anyone within [your organisation]* — only people signed in with your
-       organisation's Google accounts (Google Workspace only). Best for internal use.
-     - *Anyone* — anyone who has the link, no sign-in.
-     - *Only myself* — for testing.
-4. Click **Deploy**. Google asks you to authorise the script to read your sheet:
-   click **Authorise access**, pick your account and allow it. (If you see
-   "Google hasn't verified this app", click **Advanced → Go to … (unsafe)**: it's
-   your own script.)
-5. Copy the **Web app URL** (`https://script.google.com/macros/s/…/exec`).
-   That's the link you share.
+## 4. Test it
+
+At the top of the editor, choose **getDashboardData** in the function list and
+click **Run**. The first time, Google asks you to authorise the script to read
+your sheet (see "Authorising" below). The **Execution log** should end with
+"Execution completed" and no red error.
+
+## 5. Choose who can see the dashboard and publish
+
+Click **Deploy → Manage deployments**, click the **pencil**, set **Version** to
+**New version**, choose the access settings below, and click **Deploy**.
+(First time ever? Use **Deploy → New deployment → Web app** instead.)
+
+Pick one of these:
+
+| You want… | Execute as | Who has access | Notes |
+|---|---|---|---|
+| Only people in your organisation (Google Workspace) | Me | Anyone within *your organisation* | Best for internal use. The sheet stays private. |
+| Anyone you give the link to, no sign-in | Me | Anyone | The sheet stays private, but anyone holding the link sees the dashboard's numbers. The link can't be guessed. |
+| Only specific people (personal Gmail) | User accessing the web app | Anyone with Google account | Share the sheet as **Viewer** with exactly those people. Everyone else gets an error. Those people could also open the sheet read-only, and each must authorise the script once. |
+
+The link stays the same when you publish a new version.
+
+**Check what others see:** open the dashboard link in a private/incognito
+window.
+
+## Authorising
+
+Google shows "Google hasn't verified this app" for personal scripts. Click
+**Advanced → Go to … (unsafe)**, then **Allow**. "Unsafe" only means Google
+hasn't reviewed it; it's your own script, and it only reads the sheet.
 
 ## Updating the numbers
 
-Just edit the Google Sheet. Anyone who opens or refreshes the dashboard sees
-the new numbers right away.
+Edit the Google Sheet. Anyone who opens or refreshes the dashboard sees the new
+numbers right away.
 
-Sheet rules:
+- Keep the column titles in the first row (`Product`, `Type`,
+  `Total Weight (KG)`, …). Capitals, accents and line breaks don't matter.
+- Add a product by adding a row. Known names get their drawing (Amaranthe,
+  Arachide, Aubergine, Bananier, Carotte, Choux, Concombre, Dossi, Gombo,
+  Laitue, Oignon, Oranger, Papayer, Piment, Poivron, Pomme de terre, Tomate);
+  others show a leaf.
+- Extra columns or tabs are never sent to the dashboard.
 
-- Keep the tab names: **Gardens**, **Plots**, **Gardeners**, **Vegetables**.
-- Keep the column titles in the first row. Capitals, accents and units in
-  brackets don't matter (`Width (m)` and `width` both work).
-- A garden name in Plots or Gardeners must match a name in the Gardens tab;
-  rows that don't match are skipped.
-- Leave a gardener's stats empty and the dashboard shows "—".
-- In Vegetables, the **Icon** column has a dropdown of the drawings the
-  dashboard knows. An unknown name shows a leaf.
-- You can add your own extra columns or tabs (notes, phone numbers…). They are
-  never sent to the dashboard.
+## Gardens (later)
+
+The Gardens section uses the dashboard's built-in data until the sheet has tabs
+named **Gardens**, **Plots** and **Gardeners**; then it reads them instead.
+Ask Claude for the column layout when you're ready.
 
 ## Updating the design
 
-The design lives in the main files of this repository (`index.html`,
-`styles.css` and the `.js` files). After a design change:
-
-1. Rebuild the Apps Script file: `python3 tools/build_apps_script.py`
-   (this rewrites `apps-script/Index.html`).
-2. In Apps Script, replace the contents of `Index` (and `Code.gs` if it changed)
-   and click **Save**.
-3. Click **Deploy → Manage deployments**, click the pencil, set **Version** to
-   *New version*, and click **Deploy**.
-
-Use **Manage deployments**, not "New deployment": that keeps the same link.
+After a design change, run `python3 tools/build_apps_script.py`, paste the new
+`apps-script/Index.html` into `Index`, and publish a new version (step 5).

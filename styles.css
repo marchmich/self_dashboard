@@ -168,6 +168,16 @@ body {
   font-size: 1.4rem;
 }
 
+.veg-panel-type { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.75; }
+
+.veg-panel-group {
+  margin: 14px 0 2px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
 .veg-panel-stats { margin: 0; }
 .veg-panel-stats div {
   display: flex;

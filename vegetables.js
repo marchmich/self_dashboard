@@ -1,22 +1,30 @@
-// Harvest data — edit these values with your real figures.
-// The donut chart totals toBeSold vs forConsumption across all vegetables.
-// Placeholder numbers (6 kg sold / 14 kg kept each) until real figures are in.
+// EXAMPLE numbers for the public GitHub version only. The real figures stay in
+// the private Google Sheet and are only shown by the Apps Script version.
+// Fields match the sheet's columns: Product, Type, Total Weight (KG),
+// Market Sale Weight (KG), Family Consumption Weight (KG), Market Sale Revenue
+// (FCFA), Family Consumption Revenue (FCFA), Total Revenue (FCFA).
+const example = (name, type) => ({
+  name, type,
+  totalWeight: 20, marketWeight: 6, familyWeight: 14,
+  marketRevenue: 12000, familyRevenue: 28000, totalRevenue: 40000,
+});
+
 const VEGETABLES = [
-  { name: "Amaranth",    icon: "leaf",       toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Mai – Sept" },
-  { name: "Peanut",      icon: "peanut",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
-  { name: "Eggplant",    icon: "eggplant",   toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Juil – Sept" },
-  { name: "Banana",      icon: "banana",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
-  { name: "Carrot",      icon: "carrot",     toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Avril – Juil" },
-  { name: "Cabbage",     icon: "cabbage",    toBeSold: 6, forConsumption: 14, garden: "Bessasi B", season: "Oct – Fév" },
-  { name: "Cucumber",    icon: "cucumber",   toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Juin – Août" },
-  { name: "Dossi",       icon: "sprig",      toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
-  { name: "Okra",        icon: "okra",       toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Juil – Oct" },
-  { name: "Lettuce",     icon: "lettuce",    toBeSold: 6, forConsumption: 14, garden: "Derassi",   season: "Toute l'année" },
-  { name: "Onion",       icon: "onion",      toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Mars – Mai" },
-  { name: "Orange",      icon: "orange",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
-  { name: "Papaya",      icon: "papaya",     toBeSold: 6, forConsumption: 14, garden: "",          season: "" },
-  { name: "Hot pepper",  icon: "chili",      toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Juil – Oct" },
-  { name: "Bell pepper", icon: "bellpepper", toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Juil – Sept" },
-  { name: "Potato",      icon: "potato",     toBeSold: 6, forConsumption: 14, garden: "Kourel",    season: "Mai – Août" },
-  { name: "Tomato",      icon: "tomato",     toBeSold: 6, forConsumption: 14, garden: "Bessasi A", season: "Juin – Sept" },
+  example("Amaranthe", "Culture maraîchère"),
+  example("Arachide", "Culture maraîchère"),
+  example("Aubergine", "Culture maraîchère"),
+  example("Bananier", "Arbre fruitier à cycle court"),
+  example("Carotte", "Culture maraîchère"),
+  example("Choux", "Culture maraîchère"),
+  example("Concombre", "Culture maraîchère"),
+  example("Dossi", "Culture maraîchère"),
+  example("Gombo", "Culture maraîchère"),
+  example("Laitue", "Culture maraîchère"),
+  example("Oignon", "Culture maraîchère"),
+  example("Oranger", "Arbre fruitier pérenne"),
+  example("Papayer", "Arbre fruitier à cycle court"),
+  example("Piment", "Culture maraîchère"),
+  example("Poivron", "Culture maraîchère"),
+  example("Pomme de terre", "Culture maraîchère"),
+  example("Tomate", "Culture maraîchère"),
 ];

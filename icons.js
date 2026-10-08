@@ -18,3 +18,29 @@ const VEG_ICONS = {
   papaya: '<ellipse cx="32" cy="35" rx="15" ry="23"/><ellipse cx="32" cy="38" rx="6" ry="12"/><path d="M30 33h.01M34 37h.01M30 41h.01M34 44h.01M32 12V8"/>',
   sprig: '<path d="M32 58V12"/><path d="M32 20c-6-1-10-5-10-10 6 0 10 4 10 10zM32 20c6-1 10-5 10-10-6 0-10 4-10 10zM32 34c-7-1-12-6-12-12 7 0 12 5 12 12zM32 34c7-1 12-6 12-12-7 0-12 5-12 12zM32 48c-7-1-12-6-12-12 7 0 12 5 12 12zM32 48c7-1 12-6 12-12-7 0-12 5-12 12z"/>',
 };
+
+// Product name (as written in the sheet) → icon. Accents and capitals are ignored.
+const ICON_FOR_NAME = {
+  amaranthe: "leaf", amaranth: "leaf",
+  arachide: "peanut", peanut: "peanut",
+  aubergine: "eggplant", eggplant: "eggplant",
+  bananier: "banana", banane: "banana", banana: "banana",
+  carotte: "carrot", carrot: "carrot",
+  choux: "cabbage", chou: "cabbage", cabbage: "cabbage",
+  concombre: "cucumber", cucumber: "cucumber",
+  dossi: "sprig",
+  gombo: "okra", okra: "okra",
+  laitue: "lettuce", lettuce: "lettuce",
+  oignon: "onion", onion: "onion",
+  oranger: "orange", orange: "orange",
+  papayer: "papaya", papaye: "papaya", papaya: "papaya",
+  piment: "chili", "hot pepper": "chili",
+  poivron: "bellpepper", "bell pepper": "bellpepper",
+  "pomme de terre": "potato", potato: "potato",
+  tomate: "tomato", tomato: "tomato",
+};
+
+function iconForName(name) {
+  const key = String(name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  return ICON_FOR_NAME[key] || "leaf";
+}

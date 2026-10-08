@@ -6,24 +6,30 @@ function iconSvg(key, className = "veg-icon") {
     stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 }
 
-// The panel to the right of the grid shows the vegetable last hovered, focused or tapped.
+const kg = (v) => (isNum(v) ? fmtKg(v) : "—");
+const fcfa = (v) => (isNum(v) ? fmtFcfa(v) : "—");
+
+// The panel to the right of the grid shows the product last hovered, focused or tapped.
 function showVegDetails(veg, cell) {
-  const sold = veg.toBeSold || 0;
-  const eaten = veg.forConsumption || 0;
-  const total = sold + eaten;
-  const share = total ? `${Math.round((sold / total) * 100)}%` : "—";
   document.getElementById("veg-panel").innerHTML = `
     <div class="veg-panel-head">
-      ${iconSvg(veg.icon, "veg-panel-icon")}
-      <h3 class="veg-panel-name">${escapeHtml(veg.name)}</h3>
+      ${iconSvg(veg.icon || iconForName(veg.name), "veg-panel-icon")}
+      <div>
+        <h3 class="veg-panel-name">${escapeHtml(veg.name)}</h3>
+        <p class="veg-panel-type">${escapeHtml(veg.type || "")}</p>
+      </div>
     </div>
+    <h4 class="veg-panel-group">Weight</h4>
     <dl class="veg-panel-stats">
-      <div><dt>Total harvest</dt><dd>${fmtKg(total)}</dd></div>
-      <div><dt>To be sold</dt><dd>${fmtKg(sold)}</dd></div>
-      <div><dt>For consumption</dt><dd>${fmtKg(eaten)}</dd></div>
-      <div><dt>Share sold</dt><dd>${share}</dd></div>
-      <div><dt>Garden</dt><dd>${escapeHtml(veg.garden || "—")}</dd></div>
-      <div><dt>Season</dt><dd>${escapeHtml(veg.season || "—")}</dd></div>
+      <div><dt>Total</dt><dd>${kg(veg.totalWeight)}</dd></div>
+      <div><dt>Market sale</dt><dd>${kg(veg.marketWeight)}</dd></div>
+      <div><dt>Family consumption</dt><dd>${kg(veg.familyWeight)}</dd></div>
+    </dl>
+    <h4 class="veg-panel-group">Revenue</h4>
+    <dl class="veg-panel-stats">
+      <div><dt>Total</dt><dd>${fcfa(veg.totalRevenue)}</dd></div>
+      <div><dt>Market sale</dt><dd>${fcfa(veg.marketRevenue)}</dd></div>
+      <div><dt>Family consumption</dt><dd>${fcfa(veg.familyRevenue)}</dd></div>
     </dl>`;
   document.querySelectorAll(".veg-cell.selected").forEach((c) => c.classList.remove("selected"));
   cell.classList.add("selected");
@@ -42,7 +48,7 @@ function renderGrid(vegetables) {
     cell.setAttribute("aria-label", veg.name);
     cell.innerHTML = `
       <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
-      ${iconSvg(veg.icon)}`;
+      ${iconSvg(veg.icon || iconForName(veg.name))}`;
     const show = () => showVegDetails(veg, cell);
     cell.addEventListener("mouseenter", show);
     cell.addEventListener("focus", show);
@@ -52,12 +58,12 @@ function renderGrid(vegetables) {
 }
 
 function renderDonut(vegetables) {
-  const sold = vegetables.reduce((s, v) => s + (v.toBeSold || 0), 0);
-  const eaten = vegetables.reduce((s, v) => s + (v.forConsumption || 0), 0);
+  const sold = vegetables.reduce((s, v) => s + (v.marketWeight || 0), 0);
+  const eaten = vegetables.reduce((s, v) => s + (v.familyWeight || 0), 0);
   const total = sold + eaten;
   const segments = [
-    { label: "To be sold", value: sold, color: "var(--sold)" },
-    { label: "For consumption", value: eaten, color: "var(--consumed)" },
+    { label: "Market sale", value: sold, color: "var(--sold)" },
+    { label: "Family consumption", value: eaten, color: "var(--consumed)" },
   ];
 
   const svg = document.getElementById("donut");

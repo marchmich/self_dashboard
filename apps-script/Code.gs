@@ -1,32 +1,46 @@
 /**
  * Farm Dashboard — Google Apps Script server code.
  *
- * Paste this file as "Code.gs" in the Apps Script project attached to your
- * Google Sheet (Extensions → Apps Script), and Index.html as an HTML file
- * named "Index". See apps-script/SETUP.md for the full steps.
+ * Paste this file as "Code.gs" in your Apps Script project, and Index.html as an
+ * HTML file named "Index". See apps-script/SETUP.md for the full steps.
  *
- * The sheet itself is never shared: the page asks getDashboardData() for
- * the numbers, and only the columns listed in TABS below are sent.
+ * The sheet itself is never shared: the page asks getDashboardData() for the
+ * numbers, and only the columns listed below are sent to it.
  */
 
-// Leave empty when this script is attached to the sheet (Extensions → Apps Script).
-// For a standalone script, paste the sheet's ID here (the long code in its URL).
+// The ID of your Google Sheet: the long code in its address, between "/d/" and "/edit".
+// e.g. https://docs.google.com/spreadsheets/d/THIS_PART/edit
 const SHEET_ID = '';
 
-// Tab name → column header → field name used by the dashboard.
-// Headers are matched loosely: case, accents, spaces and "(units)" are ignored,
-// so "Width (m)", "width" and "WIDTH" all work.
-const TABS = {
-  Gardens:    { garden: 'garden', width: 'width', length: 'length' },
-  Plots:      { garden: 'garden', status: 'status', type: 'type', nbplanche: 'nbPlanche',
-                longueur: 'longueur', largeur: 'largeur' },
-  Gardeners:  { garden: 'garden', name: 'name', planches: 'planches', surface: 'surface',
-                harvest: 'harvest', crops: 'crops' },
-  Vegetables: { name: 'name', icon: 'icon', tobesold: 'toBeSold',
-                forconsumption: 'forConsumption', garden: 'garden', season: 'season' },
+// The tab with the harvest table. Leave empty to use the first tab.
+const HARVEST_TAB = '';
+
+// Harvest columns → field names used by the dashboard. Headers are matched loosely:
+// capitals, accents, spaces, line breaks and "(units)" are ignored.
+const HARVEST_COLUMNS = {
+  product: 'name',
+  type: 'type',
+  totalweight: 'totalWeight',
+  marketsaleweight: 'marketWeight',
+  familyconsumptionweight: 'familyWeight',
+  marketsalerevenue: 'marketRevenue',
+  familyconsumptionrevenue: 'familyRevenue',
+  totalrevenue: 'totalRevenue',
 };
-const NUMBER_FIELDS = ['width', 'length', 'nbPlanche', 'longueur', 'largeur',
-                       'planches', 'surface', 'harvest', 'toBeSold', 'forConsumption'];
+
+// Optional tabs for the Gardens section. Until they exist in the sheet, the
+// dashboard uses its built-in garden data.
+const GARDEN_TABS = {
+  Gardens:   { garden: 'garden', width: 'width', length: 'length' },
+  Plots:     { garden: 'garden', status: 'status', type: 'type', nbplanche: 'nbPlanche',
+               longueur: 'longueur', largeur: 'largeur' },
+  Gardeners: { garden: 'garden', name: 'name', planches: 'planches', surface: 'surface',
+               harvest: 'harvest', crops: 'crops' },
+};
+
+const NUMBER_FIELDS = ['totalWeight', 'marketWeight', 'familyWeight', 'marketRevenue',
+                       'familyRevenue', 'totalRevenue', 'width', 'length', 'nbPlanche',
+                       'longueur', 'largeur', 'planches', 'surface', 'harvest'];
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
@@ -34,18 +48,41 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/** Called by the page. Returns { gardens, gardeners, vegetables }. */
+/** Called by the page. Returns { vegetables, gardens?, gardeners? }. */
 function getDashboardData() {
   const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActive();
-  const tab = (name) => readTab_(ss, name, TABS[name]);
+  if (!ss) {
+    throw new Error('No Google Sheet found. Paste your sheet\'s ID into SHEET_ID at the top of Code.gs.');
+  }
+
+  const harvestSheet = HARVEST_TAB ? ss.getSheetByName(HARVEST_TAB) : ss.getSheets()[0];
+  if (!harvestSheet) {
+    const names = ss.getSheets().map(function (s) { return '"' + s.getName() + '"'; }).join(', ');
+    throw new Error('The Google Sheet has no tab named "' + HARVEST_TAB + '". Its tabs are: ' + names + '.');
+  }
+  const result = {
+    vegetables: readRows_(harvestSheet, HARVEST_COLUMNS).filter(function (row) { return row.name; }),
+  };
+
+  if (ss.getSheetByName('Gardens')) {
+    Object.assign(result, readGardens_(ss));
+  }
+  return result;
+}
+
+function readGardens_(ss) {
+  const tab = function (name) {
+    const sheet = ss.getSheetByName(name);
+    return sheet ? readRows_(sheet, GARDEN_TABS[name]) : [];
+  };
 
   const gardens = {};
-  tab('Gardens').forEach((row) => {
+  tab('Gardens').forEach(function (row) {
     if (!row.garden) return;
     gardens[slug_(row.garden)] = { name: row.garden, width: row.width, length: row.length, plots: [] };
   });
 
-  tab('Plots').forEach((row) => {
+  tab('Plots').forEach(function (row) {
     const garden = gardens[slug_(row.garden)];
     if (!garden) return; // garden not listed in the Gardens tab
     delete row.garden;
@@ -53,31 +90,27 @@ function getDashboardData() {
   });
 
   const gardeners = {};
-  tab('Gardeners').forEach((row) => {
+  tab('Gardeners').forEach(function (row) {
     const id = slug_(row.garden);
     if (!gardens[id] || !row.name) return;
     delete row.garden;
     (gardeners[id] = gardeners[id] || []).push(row);
   });
 
-  const vegetables = tab('Vegetables').filter((row) => row.name);
-
-  return { gardens, gardeners, vegetables };
+  return { gardens: gardens, gardeners: gardeners };
 }
 
-/** Reads one tab into objects, keeping only the configured columns. */
-function readTab_(ss, tabName, columns) {
-  const sheet = ss.getSheetByName(tabName);
-  if (!sheet) throw new Error('The Google Sheet has no tab named "' + tabName + '".');
+/** Reads a tab into objects, keeping only the listed columns. Row 1 holds the titles. */
+function readRows_(sheet, columns) {
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) return [];
 
   const headers = values[0].map(normalize_);
   return values.slice(1)
-    .filter((row) => row.some((cell) => cell !== '' && cell !== null))
-    .map((row) => {
+    .filter(function (row) { return row.some(function (cell) { return cell !== '' && cell !== null; }); })
+    .map(function (row) {
       const obj = {};
-      Object.keys(columns).forEach((header) => {
+      Object.keys(columns).forEach(function (header) {
         const field = columns[header];
         const index = headers.indexOf(header);
         const raw = index === -1 ? '' : row[index];
@@ -90,7 +123,7 @@ function readTab_(ss, tabName, columns) {
 function normalize_(header) {
   return String(header).toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g, '') // drop accents
-    .replace(/\(.*?\)/g, '')                          // drop "(m)", "(kg)"...
+    .replace(/\(.*?\)/g, '')                          // drop "(KG)", "(FCFA)"...
     .replace(/[^a-z0-9]/g, '');
 }
 
@@ -111,6 +144,6 @@ function toText_(value) {
 
 function slug_(name) {
   return String(name).toLowerCase().trim()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }

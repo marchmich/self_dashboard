@@ -178,6 +178,16 @@ body {
   font-size: 1.4rem;
 }
 
+.veg-panel-type { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.75; }
+
+.veg-panel-group {
+  margin: 14px 0 2px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+
 .veg-panel-stats { margin: 0; }
 .veg-panel-stats div {
   display: flex;
@@ -489,7 +499,7 @@ body {
           <div class="share">
             <div class="donut-wrap">
               <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-                   aria-label="Share of the harvest to be sold versus kept for consumption"></svg>
+                   aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
               <span class="donut-center" id="donut-center"></span>
               <div class="donut-tooltip" id="donut-tooltip" hidden></div>
             </div>
@@ -498,7 +508,7 @@ body {
         </div>
 
         <aside class="veg-panel" id="veg-panel" aria-live="polite">
-          <p class="veg-panel-hint">Hover over a vegetable to see its details.</p>
+          <p class="veg-panel-hint">Hover over a product to see its details.</p>
         </aside>
       </div>
     </section>
@@ -564,7 +574,8 @@ body {
   <script>
 // Shared helpers for the dashboard (used by both the GitHub site and Apps Script).
 const fmt = (n) => Number(n.toFixed(2)).toLocaleString("fr-FR", { useGrouping: false });
-const fmtKg = (n) => `${Number(n.toFixed(1)).toLocaleString("fr-FR")} kg`;
+const fmtKg = (n) => `${Number(n.toFixed(2)).toLocaleString("fr-FR")} kg`;
+const fmtFcfa = (n) => `${Math.round(n).toLocaleString("fr-FR")} FCFA`;
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 
 // Values can come from a Google Sheet, so never insert them into HTML unescaped.
@@ -627,6 +638,32 @@ const VEG_ICONS = {
   papaya: '<ellipse cx="32" cy="35" rx="15" ry="23"/><ellipse cx="32" cy="38" rx="6" ry="12"/><path d="M30 33h.01M34 37h.01M30 41h.01M34 44h.01M32 12V8"/>',
   sprig: '<path d="M32 58V12"/><path d="M32 20c-6-1-10-5-10-10 6 0 10 4 10 10zM32 20c6-1 10-5 10-10-6 0-10 4-10 10zM32 34c-7-1-12-6-12-12 7 0 12 5 12 12zM32 34c7-1 12-6 12-12-7 0-12 5-12 12zM32 48c-7-1-12-6-12-12 7 0 12 5 12 12zM32 48c7-1 12-6 12-12-7 0-12 5-12 12z"/>',
 };
+
+// Product name (as written in the sheet) → icon. Accents and capitals are ignored.
+const ICON_FOR_NAME = {
+  amaranthe: "leaf", amaranth: "leaf",
+  arachide: "peanut", peanut: "peanut",
+  aubergine: "eggplant", eggplant: "eggplant",
+  bananier: "banana", banane: "banana", banana: "banana",
+  carotte: "carrot", carrot: "carrot",
+  choux: "cabbage", chou: "cabbage", cabbage: "cabbage",
+  concombre: "cucumber", cucumber: "cucumber",
+  dossi: "sprig",
+  gombo: "okra", okra: "okra",
+  laitue: "lettuce", lettuce: "lettuce",
+  oignon: "onion", onion: "onion",
+  oranger: "orange", orange: "orange",
+  papayer: "papaya", papaye: "papaya", papaya: "papaya",
+  piment: "chili", "hot pepper": "chili",
+  poivron: "bellpepper", "bell pepper": "bellpepper",
+  "pomme de terre": "potato", potato: "potato",
+  tomate: "tomato", tomato: "tomato",
+};
+
+function iconForName(name) {
+  const key = String(name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  return ICON_FOR_NAME[key] || "leaf";
+}
 </script>
   <script>
 const COLUMNS = 4;
@@ -637,24 +674,30 @@ function iconSvg(key, className = "veg-icon") {
     stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 }
 
-// The panel to the right of the grid shows the vegetable last hovered, focused or tapped.
+const kg = (v) => (isNum(v) ? fmtKg(v) : "—");
+const fcfa = (v) => (isNum(v) ? fmtFcfa(v) : "—");
+
+// The panel to the right of the grid shows the product last hovered, focused or tapped.
 function showVegDetails(veg, cell) {
-  const sold = veg.toBeSold || 0;
-  const eaten = veg.forConsumption || 0;
-  const total = sold + eaten;
-  const share = total ? `${Math.round((sold / total) * 100)}%` : "—";
   document.getElementById("veg-panel").innerHTML = `
     <div class="veg-panel-head">
-      ${iconSvg(veg.icon, "veg-panel-icon")}
-      <h3 class="veg-panel-name">${escapeHtml(veg.name)}</h3>
+      ${iconSvg(veg.icon || iconForName(veg.name), "veg-panel-icon")}
+      <div>
+        <h3 class="veg-panel-name">${escapeHtml(veg.name)}</h3>
+        <p class="veg-panel-type">${escapeHtml(veg.type || "")}</p>
+      </div>
     </div>
+    <h4 class="veg-panel-group">Weight</h4>
     <dl class="veg-panel-stats">
-      <div><dt>Total harvest</dt><dd>${fmtKg(total)}</dd></div>
-      <div><dt>To be sold</dt><dd>${fmtKg(sold)}</dd></div>
-      <div><dt>For consumption</dt><dd>${fmtKg(eaten)}</dd></div>
-      <div><dt>Share sold</dt><dd>${share}</dd></div>
-      <div><dt>Garden</dt><dd>${escapeHtml(veg.garden || "—")}</dd></div>
-      <div><dt>Season</dt><dd>${escapeHtml(veg.season || "—")}</dd></div>
+      <div><dt>Total</dt><dd>${kg(veg.totalWeight)}</dd></div>
+      <div><dt>Market sale</dt><dd>${kg(veg.marketWeight)}</dd></div>
+      <div><dt>Family consumption</dt><dd>${kg(veg.familyWeight)}</dd></div>
+    </dl>
+    <h4 class="veg-panel-group">Revenue</h4>
+    <dl class="veg-panel-stats">
+      <div><dt>Total</dt><dd>${fcfa(veg.totalRevenue)}</dd></div>
+      <div><dt>Market sale</dt><dd>${fcfa(veg.marketRevenue)}</dd></div>
+      <div><dt>Family consumption</dt><dd>${fcfa(veg.familyRevenue)}</dd></div>
     </dl>`;
   document.querySelectorAll(".veg-cell.selected").forEach((c) => c.classList.remove("selected"));
   cell.classList.add("selected");
@@ -673,7 +716,7 @@ function renderGrid(vegetables) {
     cell.setAttribute("aria-label", veg.name);
     cell.innerHTML = `
       <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
-      ${iconSvg(veg.icon)}`;
+      ${iconSvg(veg.icon || iconForName(veg.name))}`;
     const show = () => showVegDetails(veg, cell);
     cell.addEventListener("mouseenter", show);
     cell.addEventListener("focus", show);
@@ -683,12 +726,12 @@ function renderGrid(vegetables) {
 }
 
 function renderDonut(vegetables) {
-  const sold = vegetables.reduce((s, v) => s + (v.toBeSold || 0), 0);
-  const eaten = vegetables.reduce((s, v) => s + (v.forConsumption || 0), 0);
+  const sold = vegetables.reduce((s, v) => s + (v.marketWeight || 0), 0);
+  const eaten = vegetables.reduce((s, v) => s + (v.familyWeight || 0), 0);
   const total = sold + eaten;
   const segments = [
-    { label: "To be sold", value: sold, color: "var(--sold)" },
-    { label: "For consumption", value: eaten, color: "var(--consumed)" },
+    { label: "Market sale", value: sold, color: "var(--sold)" },
+    { label: "Family consumption", value: eaten, color: "var(--consumed)" },
   ];
 
   const svg = document.getElementById("donut");
@@ -858,6 +901,79 @@ function renderGardens(gardens, gardeners) {
 window.addEventListener("hashchange", () => showGarden(currentGardenId()));
 </script>
   <script>
+// Garden data — edit these values to match your real measurements.
+// width/length are in metres; the area is computed automatically.
+// Each table row: surface cultivated = nbPlanche × longueur × largeur.
+const GARDENS = {
+  "bessasi-a": {
+    name: "Bessasi A",
+    width: 62,
+    length: 62,
+    plots: [
+      { status: "Active", type: "Tomates", nbPlanche: 10, longueur: 20, largeur: 1.2 },
+    ],
+  },
+  "bessasi-b": {
+    name: "Bessasi B",
+    width: 48,
+    length: 35,
+    plots: [
+      { status: "Active", type: "Carottes", nbPlanche: 8, longueur: 15, largeur: 1 },
+    ],
+  },
+  "derassi": {
+    name: "Derassi",
+    width: 80,
+    length: 50,
+    plots: [
+      { status: "En jachère", type: "Laitues", nbPlanche: 12, longueur: 25, largeur: 1.2 },
+    ],
+  },
+  "kourel": {
+    name: "Kourel",
+    width: 40,
+    length: 30,
+    plots: [
+      { status: "Active", type: "Poivrons", nbPlanche: 6, longueur: 18, largeur: 1 },
+    ],
+  },
+};
+</script>
+  <script>
+// Gardeners (maraîchères) per garden — keys match GARDENS in data.js.
+// Stats are not filled in yet: add any of these fields to a gardener and
+// they show up on that gardener's square, e.g.
+//   { name: "YAROU Gani", planches: 4, surface: 96, harvest: 120, crops: "Tomates, Oignons" }
+const GARDENERS = {
+  "bessasi-a": [
+    "YAROU Gani", "OROU B. Assiatou", "SASSANI Fatouma", "IDRISSOU Bona",
+    "OROU BAKA Fati", "MASSO Noura", "KARAKA SATOU", "BAHKOTO Azera",
+    "Boni Nana", "BONI Gnongbea", "ASSOUMA Adissa", "MAMA Adissa",
+    "TOURE Samata", "KASSE Aouletou", "SALIFOU satou", "Sabi boum Mariama",
+    "ILIASSOU Lamatou", "WAGBESA Rabiatou", "WONINA Lafatou", "BONI Nagado",
+    "GOUNOU Zalia", "MAMA Adissa",
+  ],
+  "bessasi-b": [
+    "AMADOU SATOU", "SAH RESO ZENABOU", "MOUSSA SATOU", "BOUKARI NAKOUMA",
+    "SANNI OLI ZARA", "BONI FATI", "MEGOUNA ZENABOU", "SEH MERE ANATOU",
+    "ALIOU LELA", "ALASSANE AISSATOU", "OROU GBASSI ZARA", "MOUSSA LAMATOU",
+    "ISSA LAFA", "ISSIAKA ADAMA", "BAH SEH MAMATOU", "BAGOUDOU LALIA",
+    "GABA FATI", "SOUMAILA ZINATOU", "GOUNOU ZALIA", "KARAKA GADO",
+    "BAH KOTO AMINA",
+  ],
+  "derassi": [
+    "YAROU Madeleine", "SOIBUI Bougnon", "GANBAKI Zenabou", "ZIME Fati",
+    "MORA Adissa", "ABOU Mariam", "MAMA Awa", "GUERRA Oly",
+    "YACOUBOU Zénabou", "MAMA biba", "TOTO Adama", "ZIME Kpagnéro",
+    "SARE Maimou", "ISSFOU Safia", "MORA Zenabou",
+  ],
+  "kourel": [
+    "DEMON AISSETOU", "WABI ADAMA", "GANI SEKO MARIAM", "DEBO KORA",
+    "WABI MARIAM", "SACCA DAMA", "MORA MANOU",
+  ],
+};
+</script>
+  <script>
 // Apps Script version: fetch the numbers from the Google Sheet, then draw the page.
 (function () {
   const statusEl = document.getElementById("load-status");
@@ -867,12 +983,15 @@ window.addEventListener("hashchange", () => showGarden(currentGardenId()));
     statusEl.hidden = !text;
   };
 
+  // Gardens use the built-in data until the sheet has a Gardens tab.
+  renderGardens(GARDENS, GARDENERS);
+
   setStatus("Loading data from the Google Sheet…");
   google.script.run
     .withSuccessHandler((data) => {
       setStatus("");
       renderAgriculture(data.vegetables || []);
-      renderGardens(data.gardens || {}, data.gardeners || {});
+      if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
     })
     .withFailureHandler((err) => {
       setStatus(`Could not load the data: ${(err && err.message) || err}`, true);
