@@ -6,6 +6,12 @@ only the columns the dashboard shows are ever sent to the page.
 
 You need two files from this folder: **`Code.gs`** and **`Index.html`**.
 
+> **Not using the sheet yet?** Use **`Index-no-sheet.html`** instead of
+> `Index.html` (paste it into the file named `Index`, same as below). It has the
+> numbers built in, like the GitHub site, and needs no Google Sheet. Skip step 1.
+> When the sheet is ready, replace its contents with `Index.html` and publish a
+> new version.
+
 ## 1. Create the Google Sheet
 
 1. In Google Drive, click **New → File upload** and pick `Farm-Dashboard-Sheet.xlsx`
