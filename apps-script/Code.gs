@@ -28,6 +28,13 @@ const HARVEST_COLUMNS = {
   totalrevenue: 'totalRevenue',
 };
 
+// Two smaller tables on the same tab, beside the harvest table.
+// Destination | Number of Entries | Cost (FCFA)   (columns J–L)
+const DESTINATION_COLUMNS = { destination: 'destination', numberofentries: 'entries', cost: 'cost' };
+// Garden | KG produced | Surface Cultivated (m2) | Kilos of Produce/sqm | Water Metric   (columns N–R)
+const PRODUCTION_COLUMNS = { garden: 'garden', kgproduced: 'kgProduced', surfacecultivated: 'surface',
+                             kilosofproducesqm: 'kgPerSqm', watermetric: 'waterMetric' };
+
 // Optional tabs for the Gardens section. Until they exist in the sheet, the
 // dashboard uses its built-in garden data.
 const GARDEN_TABS = {
@@ -39,7 +46,8 @@ const GARDEN_TABS = {
 };
 
 const NUMBER_FIELDS = ['totalWeight', 'marketWeight', 'familyWeight', 'marketRevenue',
-                       'familyRevenue', 'totalRevenue', 'width', 'length', 'nbPlanche',
+                       'familyRevenue', 'totalRevenue', 'entries', 'cost', 'kgProduced',
+                       'kgPerSqm', 'waterMetric', 'width', 'length', 'nbPlanche',
                        'longueur', 'largeur', 'planches', 'surface', 'harvest'];
 
 function doGet() {
@@ -48,7 +56,7 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/** Called by the page. Returns { vegetables, gardens?, gardeners? }. */
+/** Called by the page. Returns { vegetables, destinations, production, gardens?, gardeners? }. */
 function getDashboardData() {
   const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActive();
   if (!ss) {
@@ -62,6 +70,8 @@ function getDashboardData() {
   }
   const result = {
     vegetables: readRows_(harvestSheet, HARVEST_COLUMNS).filter(function (row) { return row.name; }),
+    destinations: readRows_(harvestSheet, DESTINATION_COLUMNS).filter(function (row) { return row.destination; }),
+    production: readRows_(harvestSheet, PRODUCTION_COLUMNS).filter(function (row) { return row.garden; }),
   };
 
   if (ss.getSheetByName('Gardens')) {

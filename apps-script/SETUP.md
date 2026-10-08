@@ -73,6 +73,13 @@ numbers right away.
   Arachide, Aubergine, Bananier, Carotte, Choux, Concombre, Dossi, Gombo,
   Laitue, Oignon, Oranger, Papayer, Piment, Poivron, Pomme de terre, Tomate);
   others show a leaf.
+- On the same tab, the dashboard also reads two smaller tables (row 1 holds
+  their titles too):
+  - **Destination**, **Number of Entries**, **Cost (FCFA)** → the table next to
+    the donut.
+  - **Garden**, **KG produced**, **Surface Cultivated (m2)**, **Kilos of
+    Produce/sqm**, **Water Metric** → "Production by garden". Add a column titled
+    **Water Metric** (e.g. column R) to fill that column; until then it shows "—".
 - Extra columns or tabs are never sent to the dashboard.
 
 ## Gardens (later)

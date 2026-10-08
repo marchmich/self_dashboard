@@ -14,8 +14,9 @@
   google.script.run
     .withSuccessHandler((data) => {
       setStatus("");
-      renderAgriculture(data.vegetables || []);
+      renderAgriculture(data.vegetables || [], data.destinations || []);
       if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
+      renderProduction(data.production || []);
     })
     .withFailureHandler((err) => {
       setStatus(`Could not load the data: ${(err && err.message) || err}`, true);

@@ -3,7 +3,7 @@
 // they show up on that gardener's square, e.g.
 //   { name: "YAROU Gani", planches: 4, surface: 96, harvest: 120, crops: "Tomates, Oignons" }
 const GARDENERS = {
-  "bessasi-a": [
+  "bessassi-a": [
     "YAROU Gani", "OROU B. Assiatou", "SASSANI Fatouma", "IDRISSOU Bona",
     "OROU BAKA Fati", "MASSO Noura", "KARAKA SATOU", "BAHKOTO Azera",
     "Boni Nana", "BONI Gnongbea", "ASSOUMA Adissa", "MAMA Adissa",
@@ -11,7 +11,7 @@ const GARDENERS = {
     "ILIASSOU Lamatou", "WAGBESA Rabiatou", "WONINA Lafatou", "BONI Nagado",
     "GOUNOU Zalia", "MAMA Adissa",
   ],
-  "bessasi-b": [
+  "bessassi-b": [
     "AMADOU SATOU", "SAH RESO ZENABOU", "MOUSSA SATOU", "BOUKARI NAKOUMA",
     "SANNI OLI ZARA", "BONI FATI", "MEGOUNA ZENABOU", "SEH MERE ANATOU",
     "ALIOU LELA", "ALASSANE AISSATOU", "OROU GBASSI ZARA", "MOUSSA LAMATOU",
@@ -19,7 +19,7 @@ const GARDENERS = {
     "GABA FATI", "SOUMAILA ZINATOU", "GOUNOU ZALIA", "KARAKA GADO",
     "BAH KOTO AMINA",
   ],
-  "derassi": [
+  "derrassi": [
     "YAROU Madeleine", "SOIBUI Bougnon", "GANBAKI Zenabou", "ZIME Fati",
     "MORA Adissa", "ABOU Mariam", "MAMA Awa", "GUERRA Oly",
     "YACOUBOU Zénabou", "MAMA biba", "TOTO Adama", "ZIME Kpagnéro",

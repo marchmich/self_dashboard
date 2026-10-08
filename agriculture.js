@@ -104,7 +104,28 @@ function renderDonut(vegetables) {
     .join("");
 }
 
-function renderAgriculture(vegetables) {
+// Destination table next to the donut; each row wears its donut colour.
+function renderDestinations(destinations) {
+  const body = document.getElementById("destinations-body");
+  body.innerHTML = "";
+  if (!destinations.length) {
+    body.innerHTML = '<tr><td colspan="3" class="empty-cell">No data</td></tr>';
+    return;
+  }
+  for (const d of destinations) {
+    const key = slugify(d.destination);
+    const color = key.includes("market") ? "var(--sold)" : key.includes("famil") ? "var(--consumed)" : "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="dest-name">${color ? `<span class="swatch" style="background:${color}"></span>` : ""}${escapeHtml(d.destination)}</td>
+      <td>${isNum(d.entries) ? fmtInt(d.entries) : "—"}</td>
+      <td>${isNum(d.cost) ? fmtInt(d.cost) : "—"}</td>`;
+    body.appendChild(tr);
+  }
+}
+
+function renderAgriculture(vegetables, destinations = []) {
   renderGrid(vegetables);
   renderDonut(vegetables);
+  renderDestinations(destinations);
 }

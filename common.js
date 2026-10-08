@@ -3,6 +3,12 @@ const fmt = (n) => Number(n.toFixed(2)).toLocaleString("fr-FR", { useGrouping: f
 const fmtKg = (n) => `${Number(n.toFixed(2)).toLocaleString("fr-FR")} kg`;
 const fmtFcfa = (n) => `${Math.round(n).toLocaleString("fr-FR")} FCFA`;
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
+const fmtInt = (n) => Math.round(n).toLocaleString("fr-FR");
+
+// "Bessassi A" → "bessassi-a": used to match names across tables.
+const slugify = (name) => String(name || "").toLowerCase().trim()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 // Values can come from a Google Sheet, so never insert them into HTML unescaped.
 const escapeHtml = (s) =>

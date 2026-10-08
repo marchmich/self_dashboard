@@ -189,14 +189,61 @@ body {
 .veg-panel-stats dt { opacity: 0.8; }
 .veg-panel-stats dd { margin: 0; font-weight: 600; text-align: right; }
 
+.divider {
+  border: none;
+  border-top: 2px solid var(--light-gray);
+  margin: 32px 0 24px;
+}
+
 .share {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.donut-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  max-width: 480px;
-  margin-top: 32px;
 }
+
+.destinations-wrap { flex: 1 1 320px; max-width: 480px; margin-top: 0; }
+
+/* Shared look for the smaller data tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.data-table th {
+  background: var(--teal);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 9px 10px;
+  text-align: right;
+}
+
+.data-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--light-gray);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table th:first-child,
+.data-table td:first-child { text-align: left; }
+
+.data-table tr.selected td { background: #fff6cc; font-weight: 600; }
+.data-table tr.selected td:first-child { box-shadow: inset 4px 0 0 var(--yellow); }
+
+.dest-name { display: flex; align-items: center; gap: 8px; }
+.empty-cell { text-align: center !important; opacity: 0.6; }
+
+.production { min-width: 520px; }
 
 .donut-legend {
   list-style: none;
@@ -459,9 +506,10 @@ body {
   .plan { margin: 0 auto; }
   .veg-cell { padding: 4px 2px; gap: 6px; }
   /* On phones the details sit right under the grid, above the chart. */
-  .harvest { display: grid; grid-template-areas: "grid" "panel" "chart"; gap: 20px; }
-  .harvest-main { display: contents; }
-  .veg-grid { grid-area: grid; max-width: none; }
-  .veg-panel { grid-area: panel; position: static; max-width: none; }
-  .share { grid-area: chart; max-width: none; margin-top: 8px; }
+  .harvest { flex-direction: column; gap: 20px; }
+  .harvest-main { flex-basis: auto; width: 100%; }
+  .veg-grid { max-width: none; }
+  .veg-panel { position: static; max-width: none; width: 100%; }
+  .share { flex-direction: column; align-items: stretch; gap: 24px; }
+  .donut-wrap { margin: 0 auto; }
 }

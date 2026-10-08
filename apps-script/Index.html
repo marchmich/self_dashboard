@@ -199,14 +199,61 @@ body {
 .veg-panel-stats dt { opacity: 0.8; }
 .veg-panel-stats dd { margin: 0; font-weight: 600; text-align: right; }
 
+.divider {
+  border: none;
+  border-top: 2px solid var(--light-gray);
+  margin: 32px 0 24px;
+}
+
 .share {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.donut-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  max-width: 480px;
-  margin-top: 32px;
 }
+
+.destinations-wrap { flex: 1 1 320px; max-width: 480px; margin-top: 0; }
+
+/* Shared look for the smaller data tables */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.data-table th {
+  background: var(--teal);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 9px 10px;
+  text-align: right;
+}
+
+.data-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--light-gray);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table th:first-child,
+.data-table td:first-child { text-align: left; }
+
+.data-table tr.selected td { background: #fff6cc; font-weight: 600; }
+.data-table tr.selected td:first-child { box-shadow: inset 4px 0 0 var(--yellow); }
+
+.dest-name { display: flex; align-items: center; gap: 8px; }
+.empty-cell { text-align: center !important; opacity: 0.6; }
+
+.production { min-width: 520px; }
 
 .donut-legend {
   list-style: none;
@@ -469,11 +516,12 @@ body {
   .plan { margin: 0 auto; }
   .veg-cell { padding: 4px 2px; gap: 6px; }
   /* On phones the details sit right under the grid, above the chart. */
-  .harvest { display: grid; grid-template-areas: "grid" "panel" "chart"; gap: 20px; }
-  .harvest-main { display: contents; }
-  .veg-grid { grid-area: grid; max-width: none; }
-  .veg-panel { grid-area: panel; position: static; max-width: none; }
-  .share { grid-area: chart; max-width: none; margin-top: 8px; }
+  .harvest { flex-direction: column; gap: 20px; }
+  .harvest-main { flex-basis: auto; width: 100%; }
+  .veg-grid { max-width: none; }
+  .veg-panel { position: static; max-width: none; width: 100%; }
+  .share { flex-direction: column; align-items: stretch; gap: 24px; }
+  .donut-wrap { margin: 0 auto; }
 }
 
 </style>
@@ -495,21 +543,34 @@ body {
       <div class="harvest">
         <div class="harvest-main">
           <div class="veg-grid" id="veg-grid"></div>
-
-          <div class="share">
-            <div class="donut-wrap">
-              <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-                   aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
-              <span class="donut-center" id="donut-center"></span>
-              <div class="donut-tooltip" id="donut-tooltip" hidden></div>
-            </div>
-            <ul class="donut-legend" id="donut-legend"></ul>
-          </div>
         </div>
 
         <aside class="veg-panel" id="veg-panel" aria-live="polite">
           <p class="veg-panel-hint">Hover over a product to see its details.</p>
         </aside>
+      </div>
+
+      <hr class="divider">
+
+      <div class="share">
+        <div class="donut-block">
+          <div class="donut-wrap">
+            <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+                 aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
+            <span class="donut-center" id="donut-center"></span>
+            <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+          </div>
+          <ul class="donut-legend" id="donut-legend"></ul>
+        </div>
+
+        <div class="table-scroll destinations-wrap">
+          <table class="data-table destinations">
+            <thead>
+              <tr><th>Destination</th><th>Number of Entries</th><th>Cost (FCFA)</th></tr>
+            </thead>
+            <tbody id="destinations-body"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -551,6 +612,22 @@ body {
         </table>
       </div>
 
+      <h3 class="subtitle">Production by garden</h3>
+      <div class="table-scroll">
+        <table class="data-table production">
+          <thead>
+            <tr>
+              <th>Garden</th>
+              <th>KG<br>produced</th>
+              <th>Surface<br>cultivated (m²)</th>
+              <th>Kilos of<br>produce/m²</th>
+              <th>Water<br>metric</th>
+            </tr>
+          </thead>
+          <tbody id="production-body"></tbody>
+        </table>
+      </div>
+
       <h3 class="subtitle">Gardeners <span class="subtitle-note" id="gardeners-note"></span></h3>
       <div class="people-grid" id="gardeners-grid"></div>
     </section>
@@ -577,6 +654,12 @@ const fmt = (n) => Number(n.toFixed(2)).toLocaleString("fr-FR", { useGrouping: f
 const fmtKg = (n) => `${Number(n.toFixed(2)).toLocaleString("fr-FR")} kg`;
 const fmtFcfa = (n) => `${Math.round(n).toLocaleString("fr-FR")} FCFA`;
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
+const fmtInt = (n) => Math.round(n).toLocaleString("fr-FR");
+
+// "Bessassi A" → "bessassi-a": used to match names across tables.
+const slugify = (name) => String(name || "").toLowerCase().trim()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 // Values can come from a Google Sheet, so never insert them into HTML unescaped.
 const escapeHtml = (s) =>
@@ -772,9 +855,30 @@ function renderDonut(vegetables) {
     .join("");
 }
 
-function renderAgriculture(vegetables) {
+// Destination table next to the donut; each row wears its donut colour.
+function renderDestinations(destinations) {
+  const body = document.getElementById("destinations-body");
+  body.innerHTML = "";
+  if (!destinations.length) {
+    body.innerHTML = '<tr><td colspan="3" class="empty-cell">No data</td></tr>';
+    return;
+  }
+  for (const d of destinations) {
+    const key = slugify(d.destination);
+    const color = key.includes("market") ? "var(--sold)" : key.includes("famil") ? "var(--consumed)" : "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="dest-name">${color ? `<span class="swatch" style="background:${color}"></span>` : ""}${escapeHtml(d.destination)}</td>
+      <td>${isNum(d.entries) ? fmtInt(d.entries) : "—"}</td>
+      <td>${isNum(d.cost) ? fmtInt(d.cost) : "—"}</td>`;
+    body.appendChild(tr);
+  }
+}
+
+function renderAgriculture(vegetables, destinations = []) {
   renderGrid(vegetables);
   renderDonut(vegetables);
+  renderDestinations(destinations);
 }
 </script>
   <script>
@@ -796,6 +900,7 @@ const stat = (value, unit = "") => (isNum(value) ? `${fmt(value)}${unit}` : "—
 
 let gardensData = {};
 let gardenersData = {};
+let productionData = null; // null until the data has loaded
 
 function renderList(selectedId) {
   listEl.innerHTML = "";
@@ -869,6 +974,38 @@ function renderGardeners(id) {
   });
 }
 
+// Production by garden: all gardens, with the selected one highlighted.
+function renderProduction(rows = productionData) {
+  productionData = rows;
+  const body = document.getElementById("production-body");
+  const selected = currentGardenId();
+  body.innerHTML = "";
+  if (!rows) return;
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="5" class="empty-cell">No data</td></tr>';
+    return;
+  }
+  for (const r of rows) {
+    const perSqm = isNum(r.kgPerSqm) ? r.kgPerSqm
+      : isNum(r.kgProduced) && isNum(r.surface) && r.surface ? r.kgProduced / r.surface : null;
+    const cells = [
+      r.garden,
+      isNum(r.kgProduced) ? fmtKg(r.kgProduced) : "—",
+      isNum(r.surface) ? `${Number(r.surface.toFixed(2)).toLocaleString("fr-FR")} m²` : "—",
+      isNum(perSqm) ? fmt(perSqm) : "—",
+      isNum(r.waterMetric) ? fmt(r.waterMetric) : "—",
+    ];
+    const tr = document.createElement("tr");
+    if (slugify(r.garden) === selected) tr.className = "selected";
+    for (const value of cells) {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  }
+}
+
 function currentGardenId() {
   const ids = Object.keys(gardensData);
   const fromHash = location.hash.slice(1);
@@ -883,6 +1020,7 @@ function showGarden(id) {
   renderList(id);
   renderGarden(id);
   renderGardeners(id);
+  renderProduction();
 }
 
 function selectGarden(id) {
@@ -905,24 +1043,24 @@ window.addEventListener("hashchange", () => showGarden(currentGardenId()));
 // width/length are in metres; the area is computed automatically.
 // Each table row: surface cultivated = nbPlanche × longueur × largeur.
 const GARDENS = {
-  "bessasi-a": {
-    name: "Bessasi A",
+  "bessassi-a": {
+    name: "Bessassi A",
     width: 62,
     length: 62,
     plots: [
       { status: "Active", type: "Tomates", nbPlanche: 10, longueur: 20, largeur: 1.2 },
     ],
   },
-  "bessasi-b": {
-    name: "Bessasi B",
+  "bessassi-b": {
+    name: "Bessassi B",
     width: 48,
     length: 35,
     plots: [
       { status: "Active", type: "Carottes", nbPlanche: 8, longueur: 15, largeur: 1 },
     ],
   },
-  "derassi": {
-    name: "Derassi",
+  "derrassi": {
+    name: "Derrassi",
     width: 80,
     length: 50,
     plots: [
@@ -945,7 +1083,7 @@ const GARDENS = {
 // they show up on that gardener's square, e.g.
 //   { name: "YAROU Gani", planches: 4, surface: 96, harvest: 120, crops: "Tomates, Oignons" }
 const GARDENERS = {
-  "bessasi-a": [
+  "bessassi-a": [
     "YAROU Gani", "OROU B. Assiatou", "SASSANI Fatouma", "IDRISSOU Bona",
     "OROU BAKA Fati", "MASSO Noura", "KARAKA SATOU", "BAHKOTO Azera",
     "Boni Nana", "BONI Gnongbea", "ASSOUMA Adissa", "MAMA Adissa",
@@ -953,7 +1091,7 @@ const GARDENERS = {
     "ILIASSOU Lamatou", "WAGBESA Rabiatou", "WONINA Lafatou", "BONI Nagado",
     "GOUNOU Zalia", "MAMA Adissa",
   ],
-  "bessasi-b": [
+  "bessassi-b": [
     "AMADOU SATOU", "SAH RESO ZENABOU", "MOUSSA SATOU", "BOUKARI NAKOUMA",
     "SANNI OLI ZARA", "BONI FATI", "MEGOUNA ZENABOU", "SEH MERE ANATOU",
     "ALIOU LELA", "ALASSANE AISSATOU", "OROU GBASSI ZARA", "MOUSSA LAMATOU",
@@ -961,7 +1099,7 @@ const GARDENERS = {
     "GABA FATI", "SOUMAILA ZINATOU", "GOUNOU ZALIA", "KARAKA GADO",
     "BAH KOTO AMINA",
   ],
-  "derassi": [
+  "derrassi": [
     "YAROU Madeleine", "SOIBUI Bougnon", "GANBAKI Zenabou", "ZIME Fati",
     "MORA Adissa", "ABOU Mariam", "MAMA Awa", "GUERRA Oly",
     "YACOUBOU Zénabou", "MAMA biba", "TOTO Adama", "ZIME Kpagnéro",
@@ -990,8 +1128,9 @@ const GARDENERS = {
   google.script.run
     .withSuccessHandler((data) => {
       setStatus("");
-      renderAgriculture(data.vegetables || []);
+      renderAgriculture(data.vegetables || [], data.destinations || []);
       if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
+      renderProduction(data.production || []);
     })
     .withFailureHandler((err) => {
       setStatus(`Could not load the data: ${(err && err.message) || err}`, true);

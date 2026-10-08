@@ -28,3 +28,17 @@ const VEGETABLES = [
   example("Pomme de terre", "Culture maraîchère"),
   example("Tomate", "Culture maraîchère"),
 ];
+
+// Example for the table next to the donut (sheet columns J–L).
+const DESTINATIONS = [
+  { destination: "Family Consumption", entries: 100, cost: 50000 },
+  { destination: "Market Sale", entries: 300, cost: 150000 },
+];
+
+// Example for "Production by garden" (sheet columns N–R).
+const PRODUCTION = [
+  { garden: "Bessassi A", kgProduced: 100, surface: 200, kgPerSqm: 0.5, waterMetric: null },
+  { garden: "Bessassi B", kgProduced: 100, surface: 200, kgPerSqm: 0.5, waterMetric: null },
+  { garden: "Derrassi", kgProduced: 100, surface: 200, kgPerSqm: 0.5, waterMetric: null },
+  { garden: "Kourel", kgProduced: 100, surface: 200, kgPerSqm: 0.5, waterMetric: null },
+];

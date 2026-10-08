@@ -2,24 +2,24 @@
 // width/length are in metres; the area is computed automatically.
 // Each table row: surface cultivated = nbPlanche × longueur × largeur.
 const GARDENS = {
-  "bessasi-a": {
-    name: "Bessasi A",
+  "bessassi-a": {
+    name: "Bessassi A",
     width: 62,
     length: 62,
     plots: [
       { status: "Active", type: "Tomates", nbPlanche: 10, longueur: 20, largeur: 1.2 },
     ],
   },
-  "bessasi-b": {
-    name: "Bessasi B",
+  "bessassi-b": {
+    name: "Bessassi B",
     width: 48,
     length: 35,
     plots: [
       { status: "Active", type: "Carottes", nbPlanche: 8, longueur: 15, largeur: 1 },
     ],
   },
-  "derassi": {
-    name: "Derassi",
+  "derrassi": {
+    name: "Derrassi",
     width: 80,
     length: 50,
     plots: [

@@ -16,6 +16,7 @@ const stat = (value, unit = "") => (isNum(value) ? `${fmt(value)}${unit}` : "—
 
 let gardensData = {};
 let gardenersData = {};
+let productionData = null; // null until the data has loaded
 
 function renderList(selectedId) {
   listEl.innerHTML = "";
@@ -89,6 +90,38 @@ function renderGardeners(id) {
   });
 }
 
+// Production by garden: all gardens, with the selected one highlighted.
+function renderProduction(rows = productionData) {
+  productionData = rows;
+  const body = document.getElementById("production-body");
+  const selected = currentGardenId();
+  body.innerHTML = "";
+  if (!rows) return;
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="5" class="empty-cell">No data</td></tr>';
+    return;
+  }
+  for (const r of rows) {
+    const perSqm = isNum(r.kgPerSqm) ? r.kgPerSqm
+      : isNum(r.kgProduced) && isNum(r.surface) && r.surface ? r.kgProduced / r.surface : null;
+    const cells = [
+      r.garden,
+      isNum(r.kgProduced) ? fmtKg(r.kgProduced) : "—",
+      isNum(r.surface) ? `${Number(r.surface.toFixed(2)).toLocaleString("fr-FR")} m²` : "—",
+      isNum(perSqm) ? fmt(perSqm) : "—",
+      isNum(r.waterMetric) ? fmt(r.waterMetric) : "—",
+    ];
+    const tr = document.createElement("tr");
+    if (slugify(r.garden) === selected) tr.className = "selected";
+    for (const value of cells) {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  }
+}
+
 function currentGardenId() {
   const ids = Object.keys(gardensData);
   const fromHash = location.hash.slice(1);
@@ -103,6 +136,7 @@ function showGarden(id) {
   renderList(id);
   renderGarden(id);
   renderGardeners(id);
+  renderProduction();
 }
 
 function selectGarden(id) {
