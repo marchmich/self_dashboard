@@ -49,6 +49,7 @@ body {
   margin: 0 auto;
   padding: 0 16px;
   display: flex;
+  justify-content: center;
   gap: 4px;
 }
 
@@ -94,6 +95,7 @@ body {
   font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(1.6rem, 3vw, 2.1rem);
   margin: 0 0 20px;
+  text-align: center;
 }
 
 /* ---------- Agriculture: harvest ---------- */
@@ -106,6 +108,7 @@ body {
 .product-picker {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -128,8 +131,18 @@ body {
 .product-select:focus-visible { outline: 3px solid var(--yellow); outline-offset: 1px; }
 
 /* Details card for the selected product */
+.product-row {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
 .veg-panel {
-  max-width: 720px;
+  flex: 1 1 380px;
+  max-width: 520px;
+  min-width: 0;
   border: 2px solid var(--teal);
   border-radius: 8px;
   padding: 18px 20px;
@@ -159,8 +172,8 @@ body {
 
 .veg-panel-groups {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 0 32px;
+  grid-template-columns: 1fr;
+  gap: 0;
 }
 
 .veg-panel-stats { margin: 0; }
@@ -181,13 +194,6 @@ body {
   margin: 32px 0 24px;
 }
 
-.share {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
 .donut-block {
   display: flex;
   flex-direction: column;
@@ -195,7 +201,48 @@ body {
   gap: 16px;
 }
 
-.destinations-wrap { flex: 1 1 360px; max-width: 560px; margin-top: 0; }
+/* ---------- Production per month chart ---------- */
+
+.trend {
+  position: relative;
+  flex: 1 1 380px;
+  max-width: 560px;
+  min-width: 0;
+  margin: 0;
+  border: 2px solid var(--teal);
+  border-radius: 8px;
+  padding: 18px 20px 12px;
+}
+
+.trend-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.trend-chart { width: 100%; }
+.trend-chart svg { display: block; width: 100%; height: auto; }
+.trend-chart .grid { stroke: var(--light-gray); stroke-width: 1; }
+.trend-chart .baseline { stroke: var(--teal); stroke-width: 1; opacity: 0.5; }
+.trend-chart .axis { fill: var(--ink); opacity: 0.7; font-size: 11px; }
+.trend-chart .bar { fill: var(--teal); transition: fill 0.12s; }
+.trend-chart .bar.active { fill: var(--orange); }
+.trend-chart .hit { fill: transparent; cursor: pointer; }
+.chart-empty { margin: 40px 0; text-align: center; opacity: 0.7; }
+
+.chart-tooltip {
+  position: absolute;
+  background: var(--white);
+  border: 2px solid var(--teal);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 14px rgba(14, 91, 116, 0.25);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.table-scroll.destinations-wrap { max-width: 640px; margin: 0 auto; }
 
 /* Shared look for the smaller data tables */
 .data-table {
@@ -284,17 +331,17 @@ body {
 
 .top {
   display: flex;
-  gap: 32px;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
 }
 
 .garden-list {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding-top: 32px;
-  min-width: 160px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 12px 28px;
 }
 
 .garden-link {
@@ -314,9 +361,8 @@ body {
 }
 
 .plan {
-  flex: 0 1 340px;
-  min-width: 240px;
-  margin: 0 0 0 auto; /* push the plan to the right */
+  width: min(340px, 100%);
+  margin: 0;
 }
 
 .dim-label {
@@ -372,33 +418,7 @@ body {
   margin-top: 10px;
 }
 
-.table-scroll { overflow-x: auto; margin-top: 32px; }
-
-.plots {
-  width: 100%;
-  min-width: 560px;
-  border-collapse: collapse;
-  background: var(--table-bg);
-  table-layout: fixed;
-}
-
-.plots th,
-.plots td {
-  border: 1px solid var(--teal);
-  padding: 10px 8px;
-  text-align: center;
-}
-
-.plots th {
-  font-weight: 600;
-  font-size: 0.9rem;
-  background: var(--teal);
-  color: var(--white);
-  border-color: var(--white) var(--white) var(--teal);
-}
-
-.plots th:first-child { border-left-color: var(--teal); }
-.plots th:last-child { border-right-color: var(--teal); }
+.table-scroll { overflow-x: auto; margin: 32px auto 0; max-width: 900px; }
 
 /* ---------- Agriculture: gardeners ---------- */
 
@@ -406,6 +426,7 @@ body {
   font-family: "Playfair Display", Georgia, serif;
   font-size: 1.4rem;
   margin: 36px 0 14px;
+  text-align: center;
 }
 
 .subtitle-note {
@@ -488,16 +509,11 @@ body {
 }
 
 @media (max-width: 720px) {
-  .garden-list { flex-direction: row; flex-wrap: wrap; gap: 16px; padding-top: 0; }
+  .garden-list { gap: 10px 16px; }
   .garden-link, .garden-link.active { font-size: 1rem; }
-  .plan { margin: 0 auto; }
-  /* On phones the details sit right under the grid, above the chart. */
   .product-picker { flex-direction: column; align-items: stretch; gap: 6px; }
   .product-select { min-width: 0; width: 100%; }
-  .share { flex-direction: column; align-items: stretch; gap: 24px; }
-  .share > * { min-width: 0; max-width: 100%; }
-  .destinations-wrap { flex: none; }
-  .donut-wrap { margin: 0 auto; }
+  .veg-panel, .trend { flex-basis: 100%; padding: 14px; }
 }
 
 </style>
@@ -521,29 +537,25 @@ body {
         <select id="product-select" class="product-select"></select>
       </div>
 
-      <div class="veg-panel" id="veg-panel" aria-live="polite"></div>
+      <div class="product-row">
+        <div class="veg-panel" id="veg-panel" aria-live="polite"></div>
+
+        <figure class="trend">
+          <figcaption class="trend-title" id="trend-title">Production per month</figcaption>
+          <div class="trend-chart" id="trend-chart"></div>
+          <div class="chart-tooltip" id="trend-tooltip" hidden></div>
+        </figure>
+      </div>
 
       <hr class="divider">
 
-      <div class="share">
-        <div class="donut-block">
-          <div class="donut-wrap">
-            <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-                 aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
-            <span class="donut-center" id="donut-center"></span>
-            <div class="donut-tooltip" id="donut-tooltip" hidden></div>
-          </div>
-          <ul class="donut-legend" id="donut-legend"></ul>
-        </div>
-
-        <div class="table-scroll destinations-wrap">
-          <table class="data-table destinations">
-            <thead>
-              <tr><th>Destination</th><th>Number of Entries</th><th>Cost (FCFA)</th><th>Cost (USD)</th></tr>
-            </thead>
-            <tbody id="destinations-body"></tbody>
-          </table>
-        </div>
+      <div class="table-scroll destinations-wrap">
+        <table class="data-table destinations">
+          <thead>
+            <tr><th>Destination</th><th>Number of Entries</th><th>Cost (FCFA)</th><th>Cost (USD)</th></tr>
+          </thead>
+          <tbody id="destinations-body"></tbody>
+        </table>
       </div>
 
       <h3 class="subtitle">Production by garden</h3>
@@ -560,6 +572,17 @@ body {
           </thead>
           <tbody id="production-body"></tbody>
         </table>
+      </div>
+
+      <h3 class="subtitle">Market sale vs family consumption</h3>
+      <div class="donut-block">
+        <div class="donut-wrap">
+          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+               aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
+          <span class="donut-center" id="donut-center"></span>
+          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+        </div>
+        <ul class="donut-legend" id="donut-legend"></ul>
       </div>
     </section>
 
@@ -583,22 +606,6 @@ body {
           </div>
           <figcaption class="area" id="area"></figcaption>
         </figure>
-      </div>
-
-      <div class="table-scroll">
-        <table class="plots">
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Type</th>
-              <th>Nb<br>Planche</th>
-              <th>Longueur<br>Planche</th>
-              <th>Largueur<br>Planche</th>
-              <th>Surface<br>Cultivated</th>
-            </tr>
-          </thead>
-          <tbody id="plots-body"></tbody>
-        </table>
       </div>
 
       <h3 class="subtitle">Gardeners <span class="subtitle-note" id="gardeners-note"></span></h3>
@@ -728,6 +735,8 @@ function iconForName(name) {
 </script>
   <script>
 const PRODUCT_KEY = "dashboard-product";
+let currentVeg = null;
+let monthlyData = null; // { productSlug: [{ month: "2025-03", kg }] }, or null when not connected
 
 function iconSvg(key, className) {
   const paths = VEG_ICONS[key] || VEG_ICONS.leaf; // unknown icon names fall back to a leaf
@@ -739,8 +748,10 @@ const kg = (v) => (isNum(v) ? fmtKg(v) : "—");
 // FCFA with the USD equivalent underneath.
 const money = (v) => (isNum(v) ? `${fmtFcfa(v)}<span class="usd">${fmtUsd(v)}</span>` : "—");
 
-// The card under the dropdown shows the selected product.
+// The card under the dropdown shows the selected product; the chart beside it follows.
 function showVegDetails(veg) {
+  currentVeg = veg;
+  renderTrend();
   document.getElementById("veg-panel").innerHTML = `
     <div class="veg-panel-head">
       ${iconSvg(veg.icon || iconForName(veg.name), "veg-panel-icon")}
@@ -861,7 +872,8 @@ function renderDestinations(destinations) {
   }
 }
 
-function renderAgriculture(vegetables, destinations = []) {
+function renderAgriculture(vegetables, destinations = [], monthly = null) {
+  monthlyData = monthly;
   renderProductPicker(vegetables);
   renderDonut(vegetables);
   renderDestinations(destinations);
@@ -894,13 +906,127 @@ function renderProduction(rows) {
     body.appendChild(tr);
   }
 }
+
+// ---------- Production per month (column chart for the selected product) ----------
+
+const monthDate = (key) => new Date(Number(key.slice(0, 4)), Number(key.slice(5, 7)) - 1, 1);
+const monthShort = (key) => monthDate(key).toLocaleDateString("en-GB", { month: "short" });
+const monthLong = (key) => monthDate(key).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+
+// Every month from the earliest to the latest entry across all products,
+// so switching products keeps the same time axis.
+function allMonths() {
+  const keys = Object.values(monthlyData || {}).flat().map((d) => d.month).sort();
+  if (!keys.length) return [];
+  const months = [];
+  const end = monthDate(keys[keys.length - 1]);
+  for (let d = monthDate(keys[0]); d <= end; d.setMonth(d.getMonth() + 1)) {
+    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+  return months;
+}
+
+function niceStep(raw) {
+  const p = 10 ** Math.floor(Math.log10(raw));
+  const f = raw / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * p;
+}
+
+// Column with a 4px rounded top, anchored square on the baseline.
+function columnPath(x, y, w, h) {
+  const r = Math.min(4, w / 2, h);
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+
+function renderTrend() {
+  const box = document.getElementById("trend-chart");
+  const tooltip = document.getElementById("trend-tooltip");
+  tooltip.hidden = true;
+  if (!currentVeg) return;
+  document.getElementById("trend-title").textContent = `${currentVeg.name}: production per month (kg)`;
+
+  if (!monthlyData) {
+    box.innerHTML = '<p class="chart-empty">Monthly data isn\'t connected yet.</p>';
+    return;
+  }
+  const months = allMonths();
+  const byMonth = new Map((monthlyData[slugify(currentVeg.name)] || []).map((d) => [d.month, d.kg]));
+  if (!months.length || !byMonth.size) {
+    box.innerHTML = `<p class="chart-empty">No entries recorded for ${escapeHtml(currentVeg.name)} yet.</p>`;
+    return;
+  }
+
+  const values = months.map((m) => byMonth.get(m) || 0);
+  const W = Math.max(280, box.clientWidth || 520);
+  const H = box.clientWidth < 420 ? 240 : 320;
+  const m = { top: 12, right: 8, bottom: 28, left: 52 };
+  const plotW = W - m.left - m.right;
+  const plotH = H - m.top - m.bottom;
+  const step = niceStep(Math.max(...values, 1) / 4);
+  const yMax = Math.ceil(Math.max(...values, 1) / step) * step;
+  const y = (v) => m.top + plotH - (v / yMax) * plotH;
+  const band = plotW / months.length;
+  const barW = Math.max(2, Math.min(36, band * 0.62));
+  const labelEvery = Math.ceil(months.length / Math.max(1, Math.floor(plotW / 44)));
+
+  let svg = "";
+  for (let v = 0; v <= yMax + 1e-9; v += step) {
+    svg += `<line class="grid" x1="${m.left}" x2="${W - m.right}" y1="${y(v)}" y2="${y(v)}"/>`;
+    svg += `<text class="axis" x="${m.left - 8}" y="${y(v)}" text-anchor="end" dominant-baseline="middle">${fmtInt(v)}</text>`;
+  }
+  months.forEach((key, i) => {
+    const cx = m.left + band * i + band / 2;
+    const h = (values[i] / yMax) * plotH;
+    if (h > 0) svg += `<path class="bar" data-i="${i}" d="${columnPath(cx - barW / 2, m.top + plotH - h, barW, h)}"/>`;
+    if (i % labelEvery === 0) {
+      // Show the year under January and under the first label.
+      const year = key.endsWith("-01") || i === 0 ? ` ${key.slice(2, 4)}` : "";
+      svg += `<text class="axis" x="${cx}" y="${H - 8}" text-anchor="middle">${monthShort(key)}${year}</text>`;
+    }
+    // Hover target: the whole column, wider than the bar.
+    svg += `<rect class="hit" data-i="${i}" x="${m.left + band * i}" y="${m.top}" width="${band}" height="${plotH}"/>`;
+  });
+  svg += `<line class="baseline" x1="${m.left}" x2="${W - m.right}" y1="${m.top + plotH}" y2="${m.top + plotH}"/>`;
+
+  const summary = months.map((k, i) => `${monthLong(k)}: ${fmtKg(values[i])}`).join(", ");
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img"
+    aria-label="${escapeHtml(`${currentVeg.name}, production per month. ${summary}`)}">${svg}</svg>`;
+
+  const svgEl = box.querySelector("svg");
+  svgEl.querySelectorAll(".hit").forEach((hit) => {
+    const i = Number(hit.dataset.i);
+    hit.addEventListener("mouseenter", () => {
+      svgEl.querySelector(`.bar[data-i="${i}"]`)?.classList.add("active");
+      tooltip.innerHTML = `<strong>${monthLong(months[i])}</strong><br>${fmtKg(values[i])}`;
+      tooltip.hidden = false;
+    });
+    hit.addEventListener("mousemove", (e) => {
+      const fig = box.parentElement.getBoundingClientRect();
+      const left = Math.min(e.clientX - fig.left + 12, fig.width - tooltip.offsetWidth - 4);
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${e.clientY - fig.top + 12}px`;
+    });
+    hit.addEventListener("mouseleave", () => {
+      svgEl.querySelector(`.bar[data-i="${i}"]`)?.classList.remove("active");
+      tooltip.hidden = true;
+    });
+  });
+}
+
+// Redraw at the new width when the chart's box changes size.
+if (window.ResizeObserver) {
+  let lastWidth = 0;
+  new ResizeObserver((entries) => {
+    const width = Math.round(entries[0].contentRect.width);
+    if (width !== lastWidth) { lastWidth = width; renderTrend(); }
+  }).observe(document.getElementById("trend-chart"));
+}
 </script>
   <script>
 const listEl = document.getElementById("garden-list");
 const widthEl = document.getElementById("dim-width");
 const lengthEl = document.getElementById("dim-length");
 const areaEl = document.getElementById("area");
-const bodyEl = document.getElementById("plots-body");
 const gardenersEl = document.getElementById("gardeners-grid");
 const gardenersNoteEl = document.getElementById("gardeners-note");
 const GARDEN_KEY = "dashboard-garden";
@@ -938,27 +1064,6 @@ function renderGarden(id) {
   lengthEl.textContent = isNum(garden.length) ? `${fmt(garden.length)}m` : "—";
   areaEl.textContent = isNum(garden.width) && isNum(garden.length)
     ? `${fmt(garden.width * garden.length)} M2` : "—";
-
-  bodyEl.innerHTML = "";
-  const rows = garden.plots && garden.plots.length ? garden.plots : [{}];
-  for (const plot of rows) {
-    const hasSize = [plot.nbPlanche, plot.longueur, plot.largeur].every(isNum);
-    const cells = [
-      plot.status ?? "",
-      plot.type ?? "",
-      plot.nbPlanche ?? "",
-      isNum(plot.longueur) ? `${fmt(plot.longueur)} m` : "",
-      isNum(plot.largeur) ? `${fmt(plot.largeur)} m` : "",
-      hasSize ? `${fmt(plot.nbPlanche * plot.longueur * plot.largeur)} m²` : "",
-    ];
-    const tr = document.createElement("tr");
-    for (const value of cells) {
-      const td = document.createElement("td");
-      td.textContent = value;
-      tr.appendChild(td);
-    }
-    bodyEl.appendChild(tr);
-  }
 }
 
 function renderGardeners(id) {
@@ -1021,39 +1126,26 @@ window.addEventListener("hashchange", () => showGarden(currentGardenId()));
   <script>
 // Garden data — edit these values to match your real measurements.
 // width/length are in metres; the area is computed automatically.
-// Each table row: surface cultivated = nbPlanche × longueur × largeur.
 const GARDENS = {
   "bessassi-a": {
     name: "Bessassi A",
     width: 62,
     length: 62,
-    plots: [
-      { status: "Active", type: "Tomates", nbPlanche: 10, longueur: 20, largeur: 1.2 },
-    ],
   },
   "bessassi-b": {
     name: "Bessassi B",
     width: 48,
     length: 35,
-    plots: [
-      { status: "Active", type: "Carottes", nbPlanche: 8, longueur: 15, largeur: 1 },
-    ],
   },
   "derrassi": {
     name: "Derrassi",
     width: 80,
     length: 50,
-    plots: [
-      { status: "En jachère", type: "Laitues", nbPlanche: 12, longueur: 25, largeur: 1.2 },
-    ],
   },
   "kourel": {
     name: "Kourel",
     width: 40,
     length: 30,
-    plots: [
-      { status: "Active", type: "Poivrons", nbPlanche: 6, longueur: 18, largeur: 1 },
-    ],
   },
 };
 </script>
@@ -1108,7 +1200,7 @@ const GARDENERS = {
   google.script.run
     .withSuccessHandler((data) => {
       setStatus("");
-      renderAgriculture(data.vegetables || [], data.destinations || []);
+      renderAgriculture(data.vegetables || [], data.destinations || [], data.monthly || null);
       if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
       renderProduction(data.production || []);
     })

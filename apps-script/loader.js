@@ -14,7 +14,7 @@
   google.script.run
     .withSuccessHandler((data) => {
       setStatus("");
-      renderAgriculture(data.vegetables || [], data.destinations || []);
+      renderAgriculture(data.vegetables || [], data.destinations || [], data.monthly || null);
       if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
       renderProduction(data.production || []);
     })

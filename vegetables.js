@@ -42,3 +42,12 @@ const PRODUCTION = [
   { garden: "Derrassi", kgProduced: 100, surface: 200, kgPerSqm: 0.5, waterMetric: null },
   { garden: "Kourel", kgProduced: 100, surface: 200, kgPerSqm: 0.5, waterMetric: null },
 ];
+
+// Example monthly production (kg) for the chart, Jan–Dec 2025.
+const MONTHLY = Object.fromEntries(VEGETABLES.map((veg, n) => [
+  slugify(veg.name),
+  Array.from({ length: 12 }, (_, i) => ({
+    month: `2025-${String(i + 1).padStart(2, "0")}`,
+    kg: Math.round(40 + 30 * Math.sin((i + n) / 2) + (n % 5) * 8),
+  })),
+]));

@@ -35,20 +35,28 @@ const DESTINATION_COLUMNS = { destination: 'destination', numberofentries: 'entr
 const PRODUCTION_COLUMNS = { garden: 'garden', kgproduced: 'kgProduced', surfacecultivated: 'surface',
                              kilosofproducesqm: 'kgPerSqm', watermetric: 'waterMetric' };
 
+// The tab with one row per harvest entry, for the "production per month" chart.
+// Leave empty until it's set up: the chart then says it isn't connected yet.
+const ENTRIES_TAB = '';
+// Possible titles for its columns (matched loosely, like the others).
+const ENTRY_HEADERS = {
+  date: ['date', 'harvestdate', 'datederecolte', 'daterecolte'],
+  product: ['product', 'produit', 'culture', 'crop'],
+  weight: ['weight', 'poids', 'quantity', 'quantite', 'kg', 'totalweight'],
+};
+
 // Optional tabs for the Gardens section. Until they exist in the sheet, the
 // dashboard uses its built-in garden data.
 const GARDEN_TABS = {
   Gardens:   { garden: 'garden', width: 'width', length: 'length' },
-  Plots:     { garden: 'garden', status: 'status', type: 'type', nbplanche: 'nbPlanche',
-               longueur: 'longueur', largeur: 'largeur' },
   Gardeners: { garden: 'garden', name: 'name', planches: 'planches', surface: 'surface',
                harvest: 'harvest', crops: 'crops' },
 };
 
 const NUMBER_FIELDS = ['totalWeight', 'marketWeight', 'familyWeight', 'marketRevenue',
                        'familyRevenue', 'totalRevenue', 'entries', 'cost', 'kgProduced',
-                       'kgPerSqm', 'waterMetric', 'width', 'length', 'nbPlanche',
-                       'longueur', 'largeur', 'planches', 'surface', 'harvest'];
+                       'kgPerSqm', 'waterMetric', 'width', 'length',
+                       'planches', 'surface', 'harvest'];
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('Index')
@@ -56,7 +64,7 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/** Called by the page. Returns { vegetables, destinations, production, gardens?, gardeners? }. */
+/** Called by the page. Returns { vegetables, destinations, production, monthly, gardens?, gardeners? }. */
 function getDashboardData() {
   const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActive();
   if (!ss) {
@@ -72,6 +80,7 @@ function getDashboardData() {
     vegetables: readRows_(harvestSheet, HARVEST_COLUMNS).filter(function (row) { return row.name; }),
     destinations: readRows_(harvestSheet, DESTINATION_COLUMNS).filter(function (row) { return row.destination; }),
     production: readRows_(harvestSheet, PRODUCTION_COLUMNS).filter(function (row) { return row.garden; }),
+    monthly: ENTRIES_TAB ? readMonthly_(ss) : null,
   };
 
   if (ss.getSheetByName('Gardens')) {
@@ -89,14 +98,7 @@ function readGardens_(ss) {
   const gardens = {};
   tab('Gardens').forEach(function (row) {
     if (!row.garden) return;
-    gardens[slug_(row.garden)] = { name: row.garden, width: row.width, length: row.length, plots: [] };
-  });
-
-  tab('Plots').forEach(function (row) {
-    const garden = gardens[slug_(row.garden)];
-    if (!garden) return; // garden not listed in the Gardens tab
-    delete row.garden;
-    garden.plots.push(row);
+    gardens[slug_(row.garden)] = { name: row.garden, width: row.width, length: row.length };
   });
 
   const gardeners = {};
@@ -108,6 +110,57 @@ function readGardens_(ss) {
   });
 
   return { gardens: gardens, gardeners: gardeners };
+}
+
+/** Adds up the entries tab by product and month: { productSlug: [{ month: 'YYYY-MM', kg }] }. */
+function readMonthly_(ss) {
+  const sheet = ss.getSheetByName(ENTRIES_TAB);
+  if (!sheet) {
+    const names = ss.getSheets().map(function (s) { return '"' + s.getName() + '"'; }).join(', ');
+    throw new Error('The Google Sheet has no tab named "' + ENTRIES_TAB + '" (ENTRIES_TAB). Its tabs are: ' + names + '.');
+  }
+  const values = sheet.getDataRange().getValues();
+  const headers = (values[0] || []).map(normalize_);
+  const column = function (field) {
+    const names = ENTRY_HEADERS[field];
+    let i = headers.findIndex(function (h) { return names.indexOf(h) !== -1; });
+    if (i === -1) i = headers.findIndex(function (h) { return names.some(function (n) { return h.indexOf(n) === 0; }); });
+    if (i === -1) throw new Error('The "' + ENTRIES_TAB + '" tab needs a ' + field + ' column (row 1 titles: date, product, weight).');
+    return i;
+  };
+  const iDate = column('date'), iProduct = column('product'), iWeight = column('weight');
+
+  const totals = {};
+  values.slice(1).forEach(function (row) {
+    const month = toMonth_(row[iDate]);
+    const product = toText_(row[iProduct]);
+    const kg = toNumber_(row[iWeight]);
+    if (!month || !product || kg === null) return;
+    const key = slug_(product);
+    totals[key] = totals[key] || {};
+    totals[key][month] = (totals[key][month] || 0) + kg;
+  });
+
+  const monthly = {};
+  Object.keys(totals).forEach(function (key) {
+    monthly[key] = Object.keys(totals[key]).sort().map(function (month) {
+      return { month: month, kg: Math.round(totals[key][month] * 1000) / 1000 };
+    });
+  });
+  return monthly;
+}
+
+/** A date cell, or text like 15/03/2025 or 2025-03-15, as 'YYYY-MM'. */
+function toMonth_(value) {
+  if (isDate_(value) && !isNaN(value)) {
+    return Utilities.formatDate(value, Session.getScriptTimeZone(), 'yyyy-MM');
+  }
+  const text = String(value || '').trim();
+  let m = text.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/); // day/month/year
+  if (m) return m[3] + '-' + ('0' + m[2]).slice(-2);
+  m = text.match(/^(\d{4})-(\d{1,2})/); // year-month(-day)
+  if (m) return m[1] + '-' + ('0' + m[2]).slice(-2);
+  return '';
 }
 
 /** Reads a tab into objects, keeping only the listed columns. Row 1 holds the titles. */
@@ -146,10 +199,14 @@ function toNumber_(value) {
 }
 
 function toText_(value) {
-  if (value instanceof Date) {
+  if (isDate_(value)) {
     return Utilities.formatDate(value, Session.getScriptTimeZone(), 'dd/MM/yyyy');
   }
   return String(value === null ? '' : value).trim();
+}
+
+function isDate_(value) {
+  return Object.prototype.toString.call(value) === '[object Date]';
 }
 
 function slug_(name) {

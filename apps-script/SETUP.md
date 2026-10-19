@@ -82,10 +82,23 @@ numbers right away.
     **Water Metric** (e.g. column R) to fill that column; until then it shows "—".
 - Extra columns or tabs are never sent to the dashboard.
 
+## Production per month (chart next to the product card)
+
+The chart adds up a tab with **one row per harvest entry**. Its first row needs
+titles for a **date**, a **product** and a **weight** column, for example
+`Date`, `Product`, `Weight (KG)` (French titles like `Date de récolte`, `Produit`,
+`Poids (KG)` work too; other columns are ignored). Dates can be date cells or
+text like `15/03/2025`. Product names must match the harvest table (e.g.
+`Amaranthe`).
+
+Then type that tab's name at the top of `Code.gs`:
+`const ENTRIES_TAB = 'Entries';` — save, and publish a new version. Until then
+the chart says "Monthly data isn't connected yet."
+
 ## Gardens (later)
 
 The Gardens section uses the dashboard's built-in data until the sheet has tabs
-named **Gardens**, **Plots** and **Gardeners**; then it reads them instead.
+named **Gardens** and **Gardeners**; then it reads them instead.
 Ask Claude for the column layout when you're ready.
 
 ## Updating the design

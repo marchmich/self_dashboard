@@ -2,7 +2,6 @@ const listEl = document.getElementById("garden-list");
 const widthEl = document.getElementById("dim-width");
 const lengthEl = document.getElementById("dim-length");
 const areaEl = document.getElementById("area");
-const bodyEl = document.getElementById("plots-body");
 const gardenersEl = document.getElementById("gardeners-grid");
 const gardenersNoteEl = document.getElementById("gardeners-note");
 const GARDEN_KEY = "dashboard-garden";
@@ -40,27 +39,6 @@ function renderGarden(id) {
   lengthEl.textContent = isNum(garden.length) ? `${fmt(garden.length)}m` : "—";
   areaEl.textContent = isNum(garden.width) && isNum(garden.length)
     ? `${fmt(garden.width * garden.length)} M2` : "—";
-
-  bodyEl.innerHTML = "";
-  const rows = garden.plots && garden.plots.length ? garden.plots : [{}];
-  for (const plot of rows) {
-    const hasSize = [plot.nbPlanche, plot.longueur, plot.largeur].every(isNum);
-    const cells = [
-      plot.status ?? "",
-      plot.type ?? "",
-      plot.nbPlanche ?? "",
-      isNum(plot.longueur) ? `${fmt(plot.longueur)} m` : "",
-      isNum(plot.largeur) ? `${fmt(plot.largeur)} m` : "",
-      hasSize ? `${fmt(plot.nbPlanche * plot.longueur * plot.largeur)} m²` : "",
-    ];
-    const tr = document.createElement("tr");
-    for (const value of cells) {
-      const td = document.createElement("td");
-      td.textContent = value;
-      tr.appendChild(td);
-    }
-    bodyEl.appendChild(tr);
-  }
 }
 
 function renderGardeners(id) {
