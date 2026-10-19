@@ -15,6 +15,7 @@ const stat = (value, unit = "") => (isNum(value) ? `${fmt(value)}${unit}` : "—
 
 let gardensData = {};
 let gardenersData = {};
+let gardenHarvestData; // undefined = still loading, null = not connected, {} = loaded
 
 function renderList(selectedId) {
   listEl.innerHTML = "";
@@ -67,6 +68,36 @@ function renderGardeners(id) {
   });
 }
 
+// Per-garden harvest from the entries tab, largest first.
+function renderGardenHarvest(id) {
+  const body = document.getElementById("garden-harvest-body");
+  document.getElementById("garden-harvest-note").textContent = id ? `· ${gardensData[id].name}` : "";
+  const msg = (text) => { body.innerHTML = `<tr><td colspan="3" class="empty-cell">${text}</td></tr>`; };
+  if (gardenHarvestData === undefined) return msg("Loading…");
+  if (gardenHarvestData === null) return msg("Harvest entries aren't connected yet.");
+  const rows = gardenHarvestData[id] || [];
+  if (!rows.length) return msg("No entries recorded for this garden yet.");
+  body.innerHTML = "";
+  let total = 0;
+  for (const r of rows) {
+    total += r.kg || 0;
+    const tr = document.createElement("tr");
+    [r.product, fmtInt(r.entries), fmtKg(r.kg)].forEach((v) => {
+      const td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  }
+  const tr = document.createElement("tr");
+  tr.className = "total-row";
+  tr.innerHTML = `<td>Total</td><td>${fmtInt(rows.reduce((s, r) => s + r.entries, 0))}</td><td>${fmtKg(total)}</td>`;
+  body.appendChild(tr);
+}
+
+function setGardenHarvest(data) {
+  gardenHarvestData = data;
+  renderGardenHarvest(currentGardenId());
+}
+
 function currentGardenId() {
   const ids = Object.keys(gardensData);
   const fromHash = location.hash.slice(1);
@@ -81,6 +112,7 @@ function showGarden(id) {
   renderList(id);
   renderGarden(id);
   renderGardeners(id);
+  renderGardenHarvest(id);
 }
 
 function selectGarden(id) {

@@ -525,3 +525,7 @@ body {
   .side-by-side .donut-legend { font-size: 0.75rem; }
   .side-by-side .data-table th, .side-by-side .data-table td { padding: 6px; font-size: 0.72rem; }
 }
+
+/* Harvest in this garden */
+.table-scroll.garden-harvest-wrap { max-width: 560px; margin: 0 auto; }
+.data-table tr.total-row td { font-weight: 700; border-top: 2px solid var(--teal); }

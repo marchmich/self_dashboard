@@ -536,6 +536,10 @@ body {
   .side-by-side .data-table th, .side-by-side .data-table td { padding: 6px; font-size: 0.72rem; }
 }
 
+/* Harvest in this garden */
+.table-scroll.garden-harvest-wrap { max-width: 560px; margin: 0 auto; }
+.data-table tr.total-row td { font-weight: 700; border-top: 2px solid var(--teal); }
+
 </style>
 </head>
 <body>
@@ -628,6 +632,14 @@ body {
           </div>
           <figcaption class="area" id="area"></figcaption>
         </figure>
+      </div>
+
+      <h3 class="subtitle">Harvest in this garden <span class="subtitle-note" id="garden-harvest-note"></span></h3>
+      <div class="table-scroll garden-harvest-wrap">
+        <table class="data-table garden-harvest">
+          <thead><tr><th>Product</th><th>Entries</th><th>Total (kg)</th></tr></thead>
+          <tbody id="garden-harvest-body"></tbody>
+        </table>
       </div>
 
       <h3 class="subtitle">Gardeners <span class="subtitle-note" id="gardeners-note"></span></h3>
@@ -1062,6 +1074,7 @@ const stat = (value, unit = "") => (isNum(value) ? `${fmt(value)}${unit}` : "—
 
 let gardensData = {};
 let gardenersData = {};
+let gardenHarvestData; // undefined = still loading, null = not connected, {} = loaded
 
 function renderList(selectedId) {
   listEl.innerHTML = "";
@@ -1114,6 +1127,36 @@ function renderGardeners(id) {
   });
 }
 
+// Per-garden harvest from the entries tab, largest first.
+function renderGardenHarvest(id) {
+  const body = document.getElementById("garden-harvest-body");
+  document.getElementById("garden-harvest-note").textContent = id ? `· ${gardensData[id].name}` : "";
+  const msg = (text) => { body.innerHTML = `<tr><td colspan="3" class="empty-cell">${text}</td></tr>`; };
+  if (gardenHarvestData === undefined) return msg("Loading…");
+  if (gardenHarvestData === null) return msg("Harvest entries aren't connected yet.");
+  const rows = gardenHarvestData[id] || [];
+  if (!rows.length) return msg("No entries recorded for this garden yet.");
+  body.innerHTML = "";
+  let total = 0;
+  for (const r of rows) {
+    total += r.kg || 0;
+    const tr = document.createElement("tr");
+    [r.product, fmtInt(r.entries), fmtKg(r.kg)].forEach((v) => {
+      const td = document.createElement("td"); td.textContent = v; tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  }
+  const tr = document.createElement("tr");
+  tr.className = "total-row";
+  tr.innerHTML = `<td>Total</td><td>${fmtInt(rows.reduce((s, r) => s + r.entries, 0))}</td><td>${fmtKg(total)}</td>`;
+  body.appendChild(tr);
+}
+
+function setGardenHarvest(data) {
+  gardenHarvestData = data;
+  renderGardenHarvest(currentGardenId());
+}
+
 function currentGardenId() {
   const ids = Object.keys(gardensData);
   const fromHash = location.hash.slice(1);
@@ -1128,6 +1171,7 @@ function showGarden(id) {
   renderList(id);
   renderGarden(id);
   renderGardeners(id);
+  renderGardenHarvest(id);
 }
 
 function selectGarden(id) {
@@ -1225,6 +1269,7 @@ const GARDENERS = {
       renderAgriculture(data.vegetables || [], data.destinations || [], data.monthly || null);
       if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
       renderProduction(data.production || []);
+      setGardenHarvest(data.gardenHarvest === undefined ? null : data.gardenHarvest);
     })
     .withFailureHandler((err) => {
       setStatus(`Could not load the data: ${(err && err.message) || err}`, true);

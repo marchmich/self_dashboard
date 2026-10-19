@@ -91,6 +91,10 @@ titles for a **date**, a **product** and a **weight** column, for example
 text like `15/03/2025`. Product names must match the harvest table (e.g.
 `Amaranthe`).
 
+If the tab also has a **garden** column (`Garden`, `Jardin` or `Site`), the
+Gardens section shows a "Harvest in this garden" table for the selected garden.
+Garden names must match the dashboard's (e.g. `Bessassi A`).
+
 Then type that tab's name at the top of `Code.gs`:
 `const ENTRIES_TAB = 'Entries';` — save, and publish a new version. Until then
 the chart says "Monthly data isn't connected yet."

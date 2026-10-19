@@ -51,3 +51,10 @@ const MONTHLY = Object.fromEntries(VEGETABLES.map((veg, n) => [
     kg: Math.round(40 + 30 * Math.sin((i + n) / 2) + (n % 5) * 8),
   })),
 ]));
+
+// Example per-garden harvest (from the entries tab in the real version).
+const GARDEN_HARVEST = {
+  "bessassi-a": [{ product: "Choux", entries: 12, kg: 140 }, { product: "Laitue", entries: 9, kg: 85.5 }, { product: "Tomate", entries: 6, kg: 40 }],
+  "bessassi-b": [{ product: "Carotte", entries: 10, kg: 120 }, { product: "Amaranthe", entries: 8, kg: 64 }],
+  "derrassi": [{ product: "Dossi", entries: 7, kg: 55 }, { product: "Gombo", entries: 5, kg: 30.25 }],
+};

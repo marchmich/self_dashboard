@@ -2,3 +2,4 @@
 renderAgriculture(VEGETABLES, DESTINATIONS, MONTHLY);
 renderGardens(GARDENS, GARDENERS);
 renderProduction(PRODUCTION);
+setGardenHarvest(GARDEN_HARVEST);

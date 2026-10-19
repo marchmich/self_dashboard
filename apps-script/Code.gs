@@ -43,6 +43,7 @@ const ENTRY_HEADERS = {
   date: ['date', 'harvestdate', 'datederecolte', 'daterecolte'],
   product: ['product', 'produit', 'culture', 'crop'],
   weight: ['weight', 'poids', 'quantity', 'quantite', 'kg', 'totalweight'],
+  garden: ['garden', 'jardin', 'site'], // optional: per-garden harvest table
 };
 
 // Optional tabs for the Gardens section. Until they exist in the sheet, the
@@ -64,7 +65,7 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/** Called by the page. Returns { vegetables, destinations, production, monthly, gardens?, gardeners? }. */
+/** Called by the page. Returns { vegetables, destinations, production, monthly, gardenHarvest, gardens?, gardeners? }. */
 function getDashboardData() {
   const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActive();
   if (!ss) {
@@ -80,8 +81,10 @@ function getDashboardData() {
     vegetables: readRows_(harvestSheet, HARVEST_COLUMNS).filter(function (row) { return row.name; }),
     destinations: readRows_(harvestSheet, DESTINATION_COLUMNS).filter(function (row) { return row.destination; }),
     production: readRows_(harvestSheet, PRODUCTION_COLUMNS).filter(function (row) { return row.garden; }),
-    monthly: ENTRIES_TAB ? readMonthly_(ss) : null,
+    monthly: null,
+    gardenHarvest: null,
   };
+  if (ENTRIES_TAB) Object.assign(result, readEntries_(ss));
 
   if (ss.getSheetByName('Gardens')) {
     Object.assign(result, readGardens_(ss));
@@ -112,8 +115,11 @@ function readGardens_(ss) {
   return { gardens: gardens, gardeners: gardeners };
 }
 
-/** Adds up the entries tab by product and month: { productSlug: [{ month: 'YYYY-MM', kg }] }. */
-function readMonthly_(ss) {
+/**
+ * Adds up the entries tab: monthly = { productSlug: [{ month, kg }] } and, if it has a garden
+ * column, gardenHarvest = { gardenSlug: [{ product, entries, kg }] } (largest first).
+ */
+function readEntries_(ss) {
   const sheet = ss.getSheetByName(ENTRIES_TAB);
   if (!sheet) {
     const names = ss.getSheets().map(function (s) { return '"' + s.getName() + '"'; }).join(', ');
@@ -121,21 +127,32 @@ function readMonthly_(ss) {
   }
   const values = sheet.getDataRange().getValues();
   const headers = (values[0] || []).map(normalize_);
-  const column = function (field) {
+  const column = function (field, optional) {
     const names = ENTRY_HEADERS[field];
     let i = headers.findIndex(function (h) { return names.indexOf(h) !== -1; });
     if (i === -1) i = headers.findIndex(function (h) { return names.some(function (n) { return h.indexOf(n) === 0; }); });
+    if (i === -1 && optional) return -1;
     if (i === -1) throw new Error('The "' + ENTRIES_TAB + '" tab needs a ' + field + ' column (row 1 titles: date, product, weight).');
     return i;
   };
   const iDate = column('date'), iProduct = column('product'), iWeight = column('weight');
+  const iGarden = column('garden', true);
 
   const totals = {};
+  const gardens = {};
   values.slice(1).forEach(function (row) {
     const month = toMonth_(row[iDate]);
     const product = toText_(row[iProduct]);
     const kg = toNumber_(row[iWeight]);
-    if (!month || !product || kg === null) return;
+    if (!product || kg === null) return;
+    if (iGarden !== -1 && toText_(row[iGarden])) {
+      const g = slug_(row[iGarden]);
+      const p = gardens[g] = gardens[g] || {};
+      const item = p[slug_(product)] = p[slug_(product)] || { product: product, entries: 0, kg: 0 };
+      item.entries += 1;
+      item.kg += kg;
+    }
+    if (!month) return;
     const key = slug_(product);
     totals[key] = totals[key] || {};
     totals[key][month] = (totals[key][month] || 0) + kg;
@@ -147,7 +164,17 @@ function readMonthly_(ss) {
       return { month: month, kg: Math.round(totals[key][month] * 1000) / 1000 };
     });
   });
-  return monthly;
+  let gardenHarvest = null;
+  if (iGarden !== -1) {
+    gardenHarvest = {};
+    Object.keys(gardens).forEach(function (g) {
+      gardenHarvest[g] = Object.keys(gardens[g]).map(function (k) {
+        const it = gardens[g][k];
+        return { product: it.product, entries: it.entries, kg: Math.round(it.kg * 1000) / 1000 };
+      }).sort(function (a, b) { return b.kg - a.kg; });
+    });
+  }
+  return { monthly: monthly, gardenHarvest: gardenHarvest };
 }
 
 /** A date cell, or text like 15/03/2025 or 2025-03-15, as 'YYYY-MM'. */

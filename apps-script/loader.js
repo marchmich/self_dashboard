@@ -17,6 +17,7 @@
       renderAgriculture(data.vegetables || [], data.destinations || [], data.monthly || null);
       if (data.gardens) renderGardens(data.gardens, data.gardeners || {});
       renderProduction(data.production || []);
+      setGardenHarvest(data.gardenHarvest === undefined ? null : data.gardenHarvest);
     })
     .withFailureHandler((err) => {
       setStatus(`Could not load the data: ${(err && err.message) || err}`, true);
