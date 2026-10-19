@@ -2,6 +2,11 @@
 const fmt = (n) => Number(n.toFixed(2)).toLocaleString("fr-FR", { useGrouping: false });
 const fmtKg = (n) => `${Number(n.toFixed(2)).toLocaleString("fr-FR")} kg`;
 const fmtFcfa = (n) => `${Math.round(n).toLocaleString("fr-FR")} FCFA`;
+
+// Conversion used for every USD amount on the dashboard.
+const FCFA_PER_USD = 540;
+const fmtUsd = (fcfa) =>
+  `${(fcfa / FCFA_PER_USD).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const fmtInt = (n) => Math.round(n).toLocaleString("fr-FR");
 

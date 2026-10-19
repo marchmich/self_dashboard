@@ -1,16 +1,17 @@
-const COLUMNS = 4;
+const PRODUCT_KEY = "dashboard-product";
 
-function iconSvg(key, className = "veg-icon") {
+function iconSvg(key, className) {
   const paths = VEG_ICONS[key] || VEG_ICONS.leaf; // unknown icon names fall back to a leaf
   return `<svg class="${className}" viewBox="0 0 64 64" fill="none" stroke="currentColor"
     stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 }
 
 const kg = (v) => (isNum(v) ? fmtKg(v) : "—");
-const fcfa = (v) => (isNum(v) ? fmtFcfa(v) : "—");
+// FCFA with the USD equivalent underneath.
+const money = (v) => (isNum(v) ? `${fmtFcfa(v)}<span class="usd">${fmtUsd(v)}</span>` : "—");
 
-// The panel to the right of the grid shows the product last hovered, focused or tapped.
-function showVegDetails(veg, cell) {
+// The card under the dropdown shows the selected product.
+function showVegDetails(veg) {
   document.getElementById("veg-panel").innerHTML = `
     <div class="veg-panel-head">
       ${iconSvg(veg.icon || iconForName(veg.name), "veg-panel-icon")}
@@ -19,42 +20,48 @@ function showVegDetails(veg, cell) {
         <p class="veg-panel-type">${escapeHtml(veg.type || "")}</p>
       </div>
     </div>
-    <h4 class="veg-panel-group">Weight</h4>
-    <dl class="veg-panel-stats">
-      <div><dt>Total</dt><dd>${kg(veg.totalWeight)}</dd></div>
-      <div><dt>Market sale</dt><dd>${kg(veg.marketWeight)}</dd></div>
-      <div><dt>Family consumption</dt><dd>${kg(veg.familyWeight)}</dd></div>
-    </dl>
-    <h4 class="veg-panel-group">Revenue</h4>
-    <dl class="veg-panel-stats">
-      <div><dt>Total</dt><dd>${fcfa(veg.totalRevenue)}</dd></div>
-      <div><dt>Market sale</dt><dd>${fcfa(veg.marketRevenue)}</dd></div>
-      <div><dt>Family consumption</dt><dd>${fcfa(veg.familyRevenue)}</dd></div>
-    </dl>`;
-  document.querySelectorAll(".veg-cell.selected").forEach((c) => c.classList.remove("selected"));
-  cell.classList.add("selected");
+    <div class="veg-panel-groups">
+      <div>
+        <h4 class="veg-panel-group">Weight</h4>
+        <dl class="veg-panel-stats">
+          <div><dt>Total</dt><dd>${kg(veg.totalWeight)}</dd></div>
+          <div><dt>Market sale</dt><dd>${kg(veg.marketWeight)}</dd></div>
+          <div><dt>Family consumption</dt><dd>${kg(veg.familyWeight)}</dd></div>
+        </dl>
+      </div>
+      <div>
+        <h4 class="veg-panel-group">Revenue</h4>
+        <dl class="veg-panel-stats">
+          <div><dt>Total</dt><dd>${money(veg.totalRevenue)}</dd></div>
+          <div><dt>Market sale</dt><dd>${money(veg.marketRevenue)}</dd></div>
+          <div><dt>Family consumption</dt><dd>${money(veg.familyRevenue)}</dd></div>
+        </dl>
+      </div>
+    </div>`;
 }
 
-function renderGrid(vegetables) {
-  const grid = document.getElementById("veg-grid");
-  grid.innerHTML = "";
+function renderProductPicker(vegetables) {
+  const select = document.getElementById("product-select");
+  select.innerHTML = "";
+  if (!vegetables.length) {
+    document.getElementById("veg-panel").innerHTML = '<p class="veg-panel-hint">No products yet.</p>';
+    return;
+  }
   vegetables.forEach((veg, i) => {
-    const row = Math.floor(i / COLUMNS);
-    const col = i % COLUMNS;
-    const cell = document.createElement("div");
-    // Alternate by row and column so the colours form a checkerboard.
-    cell.className = "veg-cell has-veg " + ((row + col) % 2 ? "green" : "cream");
-    cell.tabIndex = 0;
-    cell.setAttribute("aria-label", veg.name);
-    cell.innerHTML = `
-      <h3 class="veg-name">${escapeHtml(veg.name)}</h3>
-      ${iconSvg(veg.icon || iconForName(veg.name))}`;
-    const show = () => showVegDetails(veg, cell);
-    cell.addEventListener("mouseenter", show);
-    cell.addEventListener("focus", show);
-    cell.addEventListener("click", show);
-    grid.appendChild(cell);
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = veg.name;
+    select.appendChild(option);
   });
+  // Re-open on the product chosen last time, if it's still in the list.
+  const saved = vegetables.findIndex((v) => v.name === storage.get(PRODUCT_KEY));
+  select.value = saved === -1 ? 0 : saved;
+  showVegDetails(vegetables[select.value]);
+  select.onchange = () => {
+    const veg = vegetables[select.value];
+    storage.set(PRODUCT_KEY, veg.name);
+    showVegDetails(veg);
+  };
 }
 
 function renderDonut(vegetables) {
@@ -109,7 +116,7 @@ function renderDestinations(destinations) {
   const body = document.getElementById("destinations-body");
   body.innerHTML = "";
   if (!destinations.length) {
-    body.innerHTML = '<tr><td colspan="3" class="empty-cell">No data</td></tr>';
+    body.innerHTML = '<tr><td colspan="4" class="empty-cell">No data</td></tr>';
     return;
   }
   for (const d of destinations) {
@@ -119,13 +126,42 @@ function renderDestinations(destinations) {
     tr.innerHTML = `
       <td class="dest-name">${color ? `<span class="swatch" style="background:${color}"></span>` : ""}${escapeHtml(d.destination)}</td>
       <td>${isNum(d.entries) ? fmtInt(d.entries) : "—"}</td>
-      <td>${isNum(d.cost) ? fmtInt(d.cost) : "—"}</td>`;
+      <td>${isNum(d.cost) ? fmtInt(d.cost) : "—"}</td>
+      <td>${isNum(d.cost) ? fmtUsd(d.cost).replace(" USD", "") : "—"}</td>`;
     body.appendChild(tr);
   }
 }
 
 function renderAgriculture(vegetables, destinations = []) {
-  renderGrid(vegetables);
+  renderProductPicker(vegetables);
   renderDonut(vegetables);
   renderDestinations(destinations);
+}
+
+// Production by garden (below the destination table).
+function renderProduction(rows) {
+  const body = document.getElementById("production-body");
+  body.innerHTML = "";
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="5" class="empty-cell">No data</td></tr>';
+    return;
+  }
+  for (const r of rows) {
+    const perSqm = isNum(r.kgPerSqm) ? r.kgPerSqm
+      : isNum(r.kgProduced) && isNum(r.surface) && r.surface ? r.kgProduced / r.surface : null;
+    const cells = [
+      r.garden,
+      isNum(r.kgProduced) ? fmtKg(r.kgProduced) : "—",
+      isNum(r.surface) ? `${Number(r.surface.toFixed(2)).toLocaleString("fr-FR")} m²` : "—",
+      isNum(perSqm) ? fmt(perSqm) : "—",
+      isNum(r.waterMetric) ? fmt(r.waterMetric) : "—",
+    ];
+    const tr = document.createElement("tr");
+    for (const value of cells) {
+      const td = document.createElement("td");
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    body.appendChild(tr);
+  }
 }
