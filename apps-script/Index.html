@@ -516,6 +516,26 @@ body {
   .veg-panel, .trend { flex-basis: 100%; padding: 14px; }
 }
 
+/* Destination table (left) and donut (right) side by side */
+.subtitle.section-top { margin-top: 0; }
+.side-by-side {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+}
+.side-by-side .table-scroll.destinations-wrap { flex: 1 1 auto; max-width: 520px; min-width: 0; margin: 0; }
+.side-by-side .donut-wrap { width: 200px; }
+.side-by-side .donut-legend { flex-direction: column; align-items: flex-start; }
+.side-by-side .data-table { font-size: 0.88rem; }
+@media (max-width: 720px) {
+  .side-by-side { gap: 12px; }
+  .side-by-side .donut-wrap { width: 120px; }
+  .side-by-side .donut-center { font-size: 0.75rem; }
+  .side-by-side .donut-legend { font-size: 0.75rem; }
+  .side-by-side .data-table th, .side-by-side .data-table td { padding: 6px; font-size: 0.72rem; }
+}
+
 </style>
 </head>
 <body>
@@ -549,6 +569,8 @@ body {
 
       <hr class="divider">
 
+      <h3 class="subtitle section-top">Market sale vs family consumption</h3>
+      <div class="side-by-side">
       <div class="table-scroll destinations-wrap">
         <table class="data-table destinations">
           <thead>
@@ -556,6 +578,16 @@ body {
           </thead>
           <tbody id="destinations-body"></tbody>
         </table>
+      </div>
+      <div class="donut-block">
+        <div class="donut-wrap">
+          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+               aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
+          <span class="donut-center" id="donut-center"></span>
+          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+        </div>
+        <ul class="donut-legend" id="donut-legend"></ul>
+      </div>
       </div>
 
       <h3 class="subtitle">Production by garden</h3>
@@ -574,16 +606,6 @@ body {
         </table>
       </div>
 
-      <h3 class="subtitle">Market sale vs family consumption</h3>
-      <div class="donut-block">
-        <div class="donut-wrap">
-          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-               aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
-          <span class="donut-center" id="donut-center"></span>
-          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
-        </div>
-        <ul class="donut-legend" id="donut-legend"></ul>
-      </div>
     </section>
 
     <section class="page gardens">

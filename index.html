@@ -6,7 +6,7 @@
   <title>Farm Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
 </head>
 <body>
   <header class="tabs-bar">
@@ -39,6 +39,8 @@
 
       <hr class="divider">
 
+      <h3 class="subtitle section-top">Market sale vs family consumption</h3>
+      <div class="side-by-side">
       <div class="table-scroll destinations-wrap">
         <table class="data-table destinations">
           <thead>
@@ -46,6 +48,16 @@
           </thead>
           <tbody id="destinations-body"></tbody>
         </table>
+      </div>
+      <div class="donut-block">
+        <div class="donut-wrap">
+          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
+               aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
+          <span class="donut-center" id="donut-center"></span>
+          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
+        </div>
+        <ul class="donut-legend" id="donut-legend"></ul>
+      </div>
       </div>
 
       <h3 class="subtitle">Production by garden</h3>
@@ -64,16 +76,6 @@
         </table>
       </div>
 
-      <h3 class="subtitle">Market sale vs family consumption</h3>
-      <div class="donut-block">
-        <div class="donut-wrap">
-          <svg id="donut" class="donut" viewBox="0 0 200 200" role="img"
-               aria-label="Share of the harvest weight sold at market versus kept for family consumption"></svg>
-          <span class="donut-center" id="donut-center"></span>
-          <div class="donut-tooltip" id="donut-tooltip" hidden></div>
-        </div>
-        <ul class="donut-legend" id="donut-legend"></ul>
-      </div>
     </section>
 
     <section class="page gardens">
@@ -118,15 +120,15 @@
   </div>
 
   <!-- Shared display code -->
-  <script src="common.js?v=13"></script>
-  <script src="tabs.js?v=13"></script>
-  <script src="icons.js?v=13"></script>
-  <script src="agriculture.js?v=13"></script>
-  <script src="script.js?v=13"></script>
+  <script src="common.js?v=14"></script>
+  <script src="tabs.js?v=14"></script>
+  <script src="icons.js?v=14"></script>
+  <script src="agriculture.js?v=14"></script>
+  <script src="script.js?v=14"></script>
   <!-- Data (GitHub version only; the Apps Script version reads the Google Sheet) -->
-  <script src="vegetables.js?v=13"></script>
-  <script src="data.js?v=13"></script>
-  <script src="gardeners.js?v=13"></script>
-  <script src="main.js?v=13"></script>
+  <script src="vegetables.js?v=14"></script>
+  <script src="data.js?v=14"></script>
+  <script src="gardeners.js?v=14"></script>
+  <script src="main.js?v=14"></script>
 </body>
 </html>
