@@ -6,7 +6,7 @@
   <title>Farm Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body>
   <header class="tabs-bar">
@@ -84,28 +84,31 @@
       <div class="top">
         <nav class="garden-list" id="garden-list" aria-label="Gardens"></nav>
 
-        <figure class="plan">
-          <div class="dim dim-width">
-            <span class="dim-label" id="dim-width"></span>
-            <div class="dim-line-h"></div>
-          </div>
-          <div class="plan-row">
-            <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="Plan du jardin">
-            <div class="dim dim-length">
-              <div class="dim-line-v"></div>
-              <span class="dim-label vertical" id="dim-length"></span>
+        <div class="garden-row">
+          <figure class="plan">
+            <div class="dim dim-width">
+              <span class="dim-label" id="dim-width"></span>
+              <div class="dim-line-h"></div>
             </div>
-          </div>
-          <figcaption class="area" id="area"></figcaption>
-        </figure>
-      </div>
-
-      <h3 class="subtitle">Harvest in this garden <span class="subtitle-note" id="garden-harvest-note"></span></h3>
-      <div class="table-scroll garden-harvest-wrap">
-        <table class="data-table garden-harvest">
-          <thead><tr><th>Product</th><th>Entries</th><th>Total (kg)</th></tr></thead>
-          <tbody id="garden-harvest-body"></tbody>
-        </table>
+            <div class="plan-row">
+              <img id="garden-image" class="garden-image" src="assets/garden.svg" alt="Plan du jardin">
+              <div class="dim dim-length">
+                <div class="dim-line-v"></div>
+                <span class="dim-label vertical" id="dim-length"></span>
+              </div>
+            </div>
+            <figcaption class="area" id="area"></figcaption>
+          </figure>
+        <div class="garden-harvest-col">
+        <h3 class="subtitle">Harvest in this garden <span class="subtitle-note" id="garden-harvest-note"></span></h3>
+        <div class="table-scroll garden-harvest-wrap">
+          <table class="data-table garden-harvest">
+            <thead><tr><th>Product</th><th>Entries</th><th>Total (kg)</th></tr></thead>
+            <tbody id="garden-harvest-body"></tbody>
+          </table>
+        </div>
+        </div>
+        </div>
       </div>
 
       <h3 class="subtitle">Gardeners <span class="subtitle-note" id="gardeners-note"></span></h3>
@@ -128,15 +131,15 @@
   </div>
 
   <!-- Shared display code -->
-  <script src="common.js?v=15"></script>
-  <script src="tabs.js?v=15"></script>
-  <script src="icons.js?v=15"></script>
-  <script src="agriculture.js?v=15"></script>
-  <script src="script.js?v=15"></script>
+  <script src="common.js?v=16"></script>
+  <script src="tabs.js?v=16"></script>
+  <script src="icons.js?v=16"></script>
+  <script src="agriculture.js?v=16"></script>
+  <script src="script.js?v=16"></script>
   <!-- Data (GitHub version only; the Apps Script version reads the Google Sheet) -->
-  <script src="vegetables.js?v=15"></script>
-  <script src="data.js?v=15"></script>
-  <script src="gardeners.js?v=15"></script>
-  <script src="main.js?v=15"></script>
+  <script src="vegetables.js?v=16"></script>
+  <script src="data.js?v=16"></script>
+  <script src="gardeners.js?v=16"></script>
+  <script src="main.js?v=16"></script>
 </body>
 </html>

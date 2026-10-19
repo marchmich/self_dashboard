@@ -529,3 +529,23 @@ body {
 /* Harvest in this garden */
 .table-scroll.garden-harvest-wrap { max-width: 560px; margin: 0 auto; }
 .data-table tr.total-row td { font-weight: 700; border-top: 2px solid var(--teal); }
+
+/* Garden plan on the left, harvest table on the right */
+.garden-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+}
+.garden-row .plan { flex: 0 0 300px; }
+.garden-harvest-col { flex: 1 1 auto; min-width: 0; }
+.garden-harvest-col .subtitle { margin-top: 0; text-align: left; }
+.garden-harvest-col .table-scroll.garden-harvest-wrap { max-width: none; margin: 0; }
+.garden-harvest { font-size: 1rem; }
+.garden-harvest td, .garden-harvest th { padding: 11px 14px; }
+@media (max-width: 720px) {
+  .garden-row { flex-direction: column; align-items: center; gap: 24px; }
+  .garden-row .plan { flex-basis: auto; width: min(300px, 100%); }
+  .garden-harvest-col { width: 100%; }
+  .garden-harvest-col .subtitle { text-align: center; }
+}

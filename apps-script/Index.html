@@ -540,6 +540,26 @@ body {
 .table-scroll.garden-harvest-wrap { max-width: 560px; margin: 0 auto; }
 .data-table tr.total-row td { font-weight: 700; border-top: 2px solid var(--teal); }
 
+/* Garden plan on the left, harvest table on the right */
+.garden-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+}
+.garden-row .plan { flex: 0 0 300px; }
+.garden-harvest-col { flex: 1 1 auto; min-width: 0; }
+.garden-harvest-col .subtitle { margin-top: 0; text-align: left; }
+.garden-harvest-col .table-scroll.garden-harvest-wrap { max-width: none; margin: 0; }
+.garden-harvest { font-size: 1rem; }
+.garden-harvest td, .garden-harvest th { padding: 11px 14px; }
+@media (max-width: 720px) {
+  .garden-row { flex-direction: column; align-items: center; gap: 24px; }
+  .garden-row .plan { flex-basis: auto; width: min(300px, 100%); }
+  .garden-harvest-col { width: 100%; }
+  .garden-harvest-col .subtitle { text-align: center; }
+}
+
 </style>
 </head>
 <body>
@@ -618,28 +638,31 @@ body {
       <div class="top">
         <nav class="garden-list" id="garden-list" aria-label="Gardens"></nav>
 
-        <figure class="plan">
-          <div class="dim dim-width">
-            <span class="dim-label" id="dim-width"></span>
-            <div class="dim-line-h"></div>
-          </div>
-          <div class="plan-row">
-            <img id="garden-image" class="garden-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDAgNDgwIj4KPHJlY3Qgd2lkdGg9IjcwMCIgaGVpZ2h0PSI0ODAiIGZpbGw9IiMwRTVCNzQiLz4KPHJlY3QgeD0iMzYiIHk9IjQyIiB3aWR0aD0iNjI4IiBoZWlnaHQ9IjQxOCIgcng9IjE4IiBmaWxsPSIjOTQ2NjQwIiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iNyIvPgo8ZGVmcz4KPGcgaWQ9ImxldHR1Y2UiIHN0cm9rZT0iIzExMSIgc3Ryb2tlLXdpZHRoPSI0Ij48Y2lyY2xlIHI9IjUyIiBmaWxsPSIjNTJCNjQxIi8+PGNpcmNsZSByPSIzNiIgZmlsbD0iIzhmZDI3ZiIvPjxjaXJjbGUgcj0iMjAiIGZpbGw9IiM1MkI2NDEiLz48Y2lyY2xlIHI9IjgiIGZpbGw9IiNjNmVhYmQiLz48L2c+CjxnIGlkPSJ0b21hdG8iIHN0cm9rZT0iIzExMSIgc3Ryb2tlLXdpZHRoPSI0Ij48Y2lyY2xlIHI9IjQ0IiBmaWxsPSIjZTg0YTNmIi8+PHBhdGggZD0iTS0xOCAtMzggTDAgLTI4IEwxOCAtMzggTDggLTQ2IEwwIC01OCBMLTggLTQ2IFoiIGZpbGw9IiM1MkI2NDEiLz48L2c+CjxnIGlkPSJjYXJyb3QiIHN0cm9rZT0iIzExMSIgc3Ryb2tlLXdpZHRoPSI0Ij48cGF0aCBkPSJNLTEyIC02MCBRLTI2IC05MCAtMTggLTEwMCBRLTQgLTg2IDAgLTY0IFE0IC04NiAxOCAtMTAwIFEyNiAtOTAgMTIgLTYwIFoiIGZpbGw9IiM1MkI2NDEiLz48cGF0aCBkPSJNLTI2IC01OCBMMjYgLTU4IEw0IDkyIEwtNCA5MiBaIiBmaWxsPSIjZjA4ZDMzIi8+PHBhdGggZD0iTS0yMCAtMjAgaDE0IE04IDEwIGgxMiBNLTE0IDQwIGgxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPgo8ZyBpZD0icGVwcGVyIiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iNCI+PHBhdGggZD0iTS00NiAtMzAgUS01MCAtNTUgLTIwIC01NSBRMCAtNDUgMjAgLTU1IFE1MCAtNTUgNDYgLTMwIEwzOCA0MCBRMzAgNjAgMTIgNTIgUTAgNjIgLTEyIDUyIFEtMzAgNjAgLTM4IDQwIFoiIGZpbGw9IiM1MkI2NDEiLz48cGF0aCBkPSJNMCAtNTUgUTAgLTc1IDE0IC04MiIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+PC9nPgo8L2RlZnM+Cjx1c2UgaHJlZj0iI2xldHR1Y2UiIHg9IjEyMCIgeT0iMTI1Ii8+Cjx1c2UgaHJlZj0iI2xldHR1Y2UiIHg9IjEyMCIgeT0iMjUwIi8+Cjx1c2UgaHJlZj0iI2xldHR1Y2UiIHg9IjEyMCIgeT0iMzc1Ii8+Cjx1c2UgaHJlZj0iI3RvbWF0byIgeD0iMjMwIiB5PSIxMzAiLz4KPHVzZSBocmVmPSIjdG9tYXRvIiB4PSIyMzAiIHk9IjI1NSIvPgo8dXNlIGhyZWY9IiN0b21hdG8iIHg9IjMzNSIgeT0iMTMwIi8+Cjx1c2UgaHJlZj0iI3RvbWF0byIgeD0iMzM1IiB5PSIyNTUiLz4KPHVzZSBocmVmPSIjY2Fycm90IiB4PSI0NDAiIHk9IjE5MCIvPgo8dXNlIGhyZWY9IiNjYXJyb3QiIHg9IjUyMCIgeT0iMTkwIi8+Cjx1c2UgaHJlZj0iI2NhcnJvdCIgeD0iNjAwIiB5PSIxOTAiLz4KPHVzZSBocmVmPSIjcGVwcGVyIiB4PSIyNjAiIHk9IjM4MCIvPgo8ZyBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iNCI+PHBhdGggZD0iTTM3MCA0MjAgUTM1MCAzOTAgNDAwIDM2MCBRNDUwIDMyMCA0NzAgMjkwIFE0OTAgMzAwIDQ4NiAzMzAgUTQ3MCAzOTAgNDEwIDQyNSBRMzg1IDQzOCAzNzAgNDIwIFoiIGZpbGw9IiM3YTNmN2QiLz48cGF0aCBkPSJNNDYyIDMwMCBMNDc4IDI4MCBMNDk2IDMwMCBaIiBmaWxsPSIjNTJCNjQxIi8+PC9nPgo8dXNlIGhyZWY9IiNwZXBwZXIiIHg9IjU5MCIgeT0iMzgwIi8+Cjwvc3ZnPg==" alt="Plan du jardin">
-            <div class="dim dim-length">
-              <div class="dim-line-v"></div>
-              <span class="dim-label vertical" id="dim-length"></span>
+        <div class="garden-row">
+          <figure class="plan">
+            <div class="dim dim-width">
+              <span class="dim-label" id="dim-width"></span>
+              <div class="dim-line-h"></div>
             </div>
-          </div>
-          <figcaption class="area" id="area"></figcaption>
-        </figure>
-      </div>
-
-      <h3 class="subtitle">Harvest in this garden <span class="subtitle-note" id="garden-harvest-note"></span></h3>
-      <div class="table-scroll garden-harvest-wrap">
-        <table class="data-table garden-harvest">
-          <thead><tr><th>Product</th><th>Entries</th><th>Total (kg)</th></tr></thead>
-          <tbody id="garden-harvest-body"></tbody>
-        </table>
+            <div class="plan-row">
+              <img id="garden-image" class="garden-image" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MDAgNDgwIj4KPHJlY3Qgd2lkdGg9IjcwMCIgaGVpZ2h0PSI0ODAiIGZpbGw9IiMwRTVCNzQiLz4KPHJlY3QgeD0iMzYiIHk9IjQyIiB3aWR0aD0iNjI4IiBoZWlnaHQ9IjQxOCIgcng9IjE4IiBmaWxsPSIjOTQ2NjQwIiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iNyIvPgo8ZGVmcz4KPGcgaWQ9ImxldHR1Y2UiIHN0cm9rZT0iIzExMSIgc3Ryb2tlLXdpZHRoPSI0Ij48Y2lyY2xlIHI9IjUyIiBmaWxsPSIjNTJCNjQxIi8+PGNpcmNsZSByPSIzNiIgZmlsbD0iIzhmZDI3ZiIvPjxjaXJjbGUgcj0iMjAiIGZpbGw9IiM1MkI2NDEiLz48Y2lyY2xlIHI9IjgiIGZpbGw9IiNjNmVhYmQiLz48L2c+CjxnIGlkPSJ0b21hdG8iIHN0cm9rZT0iIzExMSIgc3Ryb2tlLXdpZHRoPSI0Ij48Y2lyY2xlIHI9IjQ0IiBmaWxsPSIjZTg0YTNmIi8+PHBhdGggZD0iTS0xOCAtMzggTDAgLTI4IEwxOCAtMzggTDggLTQ2IEwwIC01OCBMLTggLTQ2IFoiIGZpbGw9IiM1MkI2NDEiLz48L2c+CjxnIGlkPSJjYXJyb3QiIHN0cm9rZT0iIzExMSIgc3Ryb2tlLXdpZHRoPSI0Ij48cGF0aCBkPSJNLTEyIC02MCBRLTI2IC05MCAtMTggLTEwMCBRLTQgLTg2IDAgLTY0IFE0IC04NiAxOCAtMTAwIFEyNiAtOTAgMTIgLTYwIFoiIGZpbGw9IiM1MkI2NDEiLz48cGF0aCBkPSJNLTI2IC01OCBMMjYgLTU4IEw0IDkyIEwtNCA5MiBaIiBmaWxsPSIjZjA4ZDMzIi8+PHBhdGggZD0iTS0yMCAtMjAgaDE0IE04IDEwIGgxMiBNLTE0IDQwIGgxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9nPgo8ZyBpZD0icGVwcGVyIiBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iNCI+PHBhdGggZD0iTS00NiAtMzAgUS01MCAtNTUgLTIwIC01NSBRMCAtNDUgMjAgLTU1IFE1MCAtNTUgNDYgLTMwIEwzOCA0MCBRMzAgNjAgMTIgNTIgUTAgNjIgLTEyIDUyIFEtMzAgNjAgLTM4IDQwIFoiIGZpbGw9IiM1MkI2NDEiLz48cGF0aCBkPSJNMCAtNTUgUTAgLTc1IDE0IC04MiIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+PC9nPgo8L2RlZnM+Cjx1c2UgaHJlZj0iI2xldHR1Y2UiIHg9IjEyMCIgeT0iMTI1Ii8+Cjx1c2UgaHJlZj0iI2xldHR1Y2UiIHg9IjEyMCIgeT0iMjUwIi8+Cjx1c2UgaHJlZj0iI2xldHR1Y2UiIHg9IjEyMCIgeT0iMzc1Ii8+Cjx1c2UgaHJlZj0iI3RvbWF0byIgeD0iMjMwIiB5PSIxMzAiLz4KPHVzZSBocmVmPSIjdG9tYXRvIiB4PSIyMzAiIHk9IjI1NSIvPgo8dXNlIGhyZWY9IiN0b21hdG8iIHg9IjMzNSIgeT0iMTMwIi8+Cjx1c2UgaHJlZj0iI3RvbWF0byIgeD0iMzM1IiB5PSIyNTUiLz4KPHVzZSBocmVmPSIjY2Fycm90IiB4PSI0NDAiIHk9IjE5MCIvPgo8dXNlIGhyZWY9IiNjYXJyb3QiIHg9IjUyMCIgeT0iMTkwIi8+Cjx1c2UgaHJlZj0iI2NhcnJvdCIgeD0iNjAwIiB5PSIxOTAiLz4KPHVzZSBocmVmPSIjcGVwcGVyIiB4PSIyNjAiIHk9IjM4MCIvPgo8ZyBzdHJva2U9IiMxMTEiIHN0cm9rZS13aWR0aD0iNCI+PHBhdGggZD0iTTM3MCA0MjAgUTM1MCAzOTAgNDAwIDM2MCBRNDUwIDMyMCA0NzAgMjkwIFE0OTAgMzAwIDQ4NiAzMzAgUTQ3MCAzOTAgNDEwIDQyNSBRMzg1IDQzOCAzNzAgNDIwIFoiIGZpbGw9IiM3YTNmN2QiLz48cGF0aCBkPSJNNDYyIDMwMCBMNDc4IDI4MCBMNDk2IDMwMCBaIiBmaWxsPSIjNTJCNjQxIi8+PC9nPgo8dXNlIGhyZWY9IiNwZXBwZXIiIHg9IjU5MCIgeT0iMzgwIi8+Cjwvc3ZnPg==" alt="Plan du jardin">
+              <div class="dim dim-length">
+                <div class="dim-line-v"></div>
+                <span class="dim-label vertical" id="dim-length"></span>
+              </div>
+            </div>
+            <figcaption class="area" id="area"></figcaption>
+          </figure>
+        <div class="garden-harvest-col">
+        <h3 class="subtitle">Harvest in this garden <span class="subtitle-note" id="garden-harvest-note"></span></h3>
+        <div class="table-scroll garden-harvest-wrap">
+          <table class="data-table garden-harvest">
+            <thead><tr><th>Product</th><th>Entries</th><th>Total (kg)</th></tr></thead>
+            <tbody id="garden-harvest-body"></tbody>
+          </table>
+        </div>
+        </div>
+        </div>
       </div>
 
       <h3 class="subtitle">Gardeners <span class="subtitle-note" id="gardeners-note"></span></h3>
